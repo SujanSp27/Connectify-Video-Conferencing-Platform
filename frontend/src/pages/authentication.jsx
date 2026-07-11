@@ -31,7 +31,6 @@ export default function Authentication() {
             >
                 <CssBaseline />
 
-                {/* Left Image Section */}
                 <Grid
                     size={{ xs: 0, sm: 4, md: 7 }}
                     sx={{
@@ -42,8 +41,6 @@ export default function Authentication() {
                         backgroundPosition: 'center',
                     }}
                 />
-
-                {/* Right Form Section */}
                 <Grid
                     size={{ xs: 12, sm: 8, md: 5 }}
                     component={Paper}

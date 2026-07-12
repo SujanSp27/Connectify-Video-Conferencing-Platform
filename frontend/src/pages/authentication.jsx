@@ -79,29 +79,23 @@ export default function Authentication() {
 
                 {/* Left Side Image */}
                 <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={7}
-                    sx={{
-                        backgroundImage:
-                            'url(https://picsum.photos/1200/900)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
-                />
+    size={{ sm: 4, md: 7 }}
+    sx={{
+        backgroundImage: 'url(https://picsum.photos/1200/900)',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh'
+    }}
+/>
 
                 {/* Right Side Form */}
-                <Grid
-                    item
-                    xs={12}
-                    sm={8}
-                    md={5}
-                    component={Paper}
-                    elevation={6}
-                    square
-                >
+               <Grid
+    size={{ xs: 12, sm: 8, md: 5 }}
+    component={Paper}
+    elevation={6}
+    square
+>
                     <Box
                         sx={{
                             my: 8,

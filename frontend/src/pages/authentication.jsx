@@ -9,18 +9,64 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Snackbar } from '@mui/material';
+import { AuthContext } from '../contexts/AuthContext';
 
 const defaultTheme = createTheme();
 
 export default function Authentication() {
+
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [name, setName] = React.useState("");
     const [error, setError] = React.useState("");
     const [message, setMessage] = React.useState("");
 
+    // 0 -> Login
+    // 1 -> Register
     const [formState, setFormState] = React.useState(0);
+
     const [open, setOpen] = React.useState(false);
+
+    const { handleLogin, handleRegister } =
+        React.useContext(AuthContext);
+
+    const handleAuth = async () => {
+        try {
+
+            setError("");
+
+            // LOGIN
+            if (formState === 0) {
+                await handleLogin(username, password);
+            }
+
+            // REGISTER
+            else {
+                const result = await handleRegister(
+                    name,
+                    username,
+                    password
+                );
+
+                setMessage(result);
+                setOpen(true);
+
+                setName("");
+                setUsername("");
+                setPassword("");
+
+                // Move back to login page
+                setFormState(0);
+            }
+
+        } catch (err) {
+            const message =
+                err.response?.data?.message ||
+                "Something went wrong";
+
+            setError(message);
+        }
+    };
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -31,8 +77,12 @@ export default function Authentication() {
             >
                 <CssBaseline />
 
+                {/* Left Side Image */}
                 <Grid
-                    size={{ xs: 0, sm: 4, md: 7 }}
+                    item
+                    xs={false}
+                    sm={4}
+                    md={7}
                     sx={{
                         backgroundImage:
                             'url(https://picsum.photos/1200/900)',
@@ -41,8 +91,13 @@ export default function Authentication() {
                         backgroundPosition: 'center',
                     }}
                 />
+
+                {/* Right Side Form */}
                 <Grid
-                    size={{ xs: 12, sm: 8, md: 5 }}
+                    item
+                    xs={12}
+                    sm={8}
+                    md={5}
                     component={Paper}
                     elevation={6}
                     square
@@ -56,27 +111,47 @@ export default function Authentication() {
                             alignItems: 'center',
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                        <Avatar
+                            sx={{
+                                m: 1,
+                                bgcolor: 'secondary.main'
+                            }}
+                        >
                             <LockOutlinedIcon />
                         </Avatar>
 
+                        {/* Toggle Buttons */}
                         <div>
                             <Button
-                                variant={formState === 0 ? "contained" : "text"}
+                                variant={
+                                    formState === 0
+                                        ? "contained"
+                                        : "text"
+                                }
                                 onClick={() => setFormState(0)}
                             >
                                 Sign In
                             </Button>
 
                             <Button
-                                variant={formState === 1 ? "contained" : "text"}
+                                variant={
+                                    formState === 1
+                                        ? "contained"
+                                        : "text"
+                                }
                                 onClick={() => setFormState(1)}
                             >
                                 Sign Up
                             </Button>
                         </div>
 
-                        <Box component="form" noValidate sx={{ mt: 1 }}>
+                        <Box
+                            component="form"
+                            noValidate
+                            sx={{ mt: 1 }}
+                        >
+
+                            {/* Full Name Field */}
                             {formState === 1 && (
                                 <TextField
                                     margin="normal"
@@ -84,10 +159,13 @@ export default function Authentication() {
                                     fullWidth
                                     label="Full Name"
                                     value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={(e) =>
+                                        setName(e.target.value)
+                                    }
                                 />
                             )}
 
+                            {/* Username */}
                             <TextField
                                 margin="normal"
                                 required
@@ -95,10 +173,13 @@ export default function Authentication() {
                                 label="Username"
                                 value={username}
                                 onChange={(e) =>
-                                    setUsername(e.target.value)
+                                    setUsername(
+                                        e.target.value
+                                    )
                                 }
                             />
 
+                            {/* Password */}
                             <TextField
                                 margin="normal"
                                 required
@@ -107,29 +188,43 @@ export default function Authentication() {
                                 type="password"
                                 value={password}
                                 onChange={(e) =>
-                                    setPassword(e.target.value)
+                                    setPassword(
+                                        e.target.value
+                                    )
                                 }
                             />
 
-                            <p style={{ color: "red" }}>
+                            {/* Error Message */}
+                            <p
+                                style={{
+                                    color: "red",
+                                    textAlign: "center"
+                                }}
+                            >
                                 {error}
                             </p>
 
+                            {/* Submit Button */}
                             <Button
                                 type="button"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
+                                onClick={handleAuth}
                             >
-                                {formState === 0
-                                    ? "LOGIN"
-                                    : "REGISTER"}
+                                {
+                                    formState === 0
+                                        ? "LOGIN"
+                                        : "REGISTER"
+                                }
                             </Button>
+
                         </Box>
                     </Box>
                 </Grid>
             </Grid>
 
+            {/* Success Message */}
             <Snackbar
                 open={open}
                 autoHideDuration={4000}

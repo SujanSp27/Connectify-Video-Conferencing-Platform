@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import styles from "../styles/videoComponent.module.css";
 const server_url = "http://localhost:8000";
 
-var connections = {};
+const connections = {};
 
 const peerConfigConnections = {
     "iceServers": [
@@ -12,10 +12,10 @@ const peerConfigConnections = {
 
 export default function VideoMeetComponent() {
 
-    var socketRef = useRef();
-    let socketIdRef = useRef();
+    const socketRef = useRef();
+    const socketIdRef = useRef();
 
-    let localVideoref = useRef();
+    const localVideoref = useRef();
 
     let [videoAvailable, setVideoAvailable] = useState(true);
 

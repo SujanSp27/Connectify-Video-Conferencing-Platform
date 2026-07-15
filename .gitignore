@@ -46,3 +46,5 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+connectify document.docx

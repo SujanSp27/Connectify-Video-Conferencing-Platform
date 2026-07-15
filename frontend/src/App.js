@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/landing';
 import Authentication from './pages/authentication';
+import VideoMeetComponent from './pages/VideoMeet';
 import { AuthProvider } from './contexts/AuthContext';
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Routes>
             <Route path='/' element={<LandingPage />} />
              <Route path='/auth' element={<Authentication />} />
+             <Route path='/:url' element={<VideoMeetComponent />} />
           </Routes>
            </AuthProvider>
     </BrowserRouter>

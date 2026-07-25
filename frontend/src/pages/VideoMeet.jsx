@@ -116,6 +116,28 @@ export default function VideoMeetComponent() {
         // connectToSocketServer();
 
     }
+    let connect = () => {
+    setAskForUsername(false);
+    getMedia();
+}
+
+
+let getUserMediaSuccess = (stream) => {
+
+    try {
+        window.localStream.getTracks().forEach(track => track.stop());
+    } catch (e) {
+        console.log(e);
+    }
+
+    window.localStream = stream;
+
+    if (localVideoref.current) {
+        localVideoref.current.srcObject = stream;
+    }
+};
+
+
 
  let getUserMedia = () => {
         if ((video && videoAvailable) || (audio && audioAvailable)) {

@@ -485,6 +485,15 @@ function black({ width = 640, height = 480 } = {}) {
         window.location.href = "/"
     }
 
+     useEffect(() => {
+        if (screen !== undefined) {
+            getDislayMedia();
+        }
+    }, [screen])
+    let handleScreen = () => {
+        setScreen(!screen);
+    }
+
     let openChat = () => {
         setModal(true);
         setNewMessages(0);
@@ -788,7 +797,7 @@ return (
 
             {screenAvailable && (
                 <IconButton
-                    // onClick={handleScreen}
+                    onClick={handleScreen}
                     style={{ color: "white" }}
                 >
                     {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}

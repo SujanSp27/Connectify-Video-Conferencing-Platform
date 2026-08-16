@@ -762,6 +762,7 @@ return (
 
         {/* Lobby Section */}
         <div className={styles.lobbyContainer}>
+
             <h2>Enter into Lobby</h2>
 
             <TextField
@@ -777,18 +778,25 @@ return (
             >
                 Connect
             </Button>
+
         </div>
+
 
         {/* Meeting Container */}
         <div className={styles.meetVideoContainer}>
 
-            {/* Chat Room */}
+
+            {/* ================= CHAT ROOM ================= */}
+
             {showModal && (
                 <div className={styles.chatRoom}>
 
                     <div className={styles.chatContainer}>
 
+
+                        {/* Chat Header */}
                         <div className={styles.chatHeader}>
+
                             <h1>Chat</h1>
 
                             <IconButton
@@ -797,33 +805,59 @@ return (
                             >
                                 ✕
                             </IconButton>
+
                         </div>
+
 
                         {/* Messages */}
                         <div className={styles.chattingDisplay}>
 
                             {messages.length > 0 ? (
+
                                 messages.map((item, index) => (
+
                                     <div
                                         key={index}
                                         className={styles.message}
                                     >
-                                        <p className={styles.sender}>
-                                            {item.sender}
-                                        </p>
 
-                                        <p className={styles.messageText}>
+                                        {/* Username */}
+                                        <div
+                                            style={{
+                                                fontWeight: "bold",
+                                                fontSize: "14px",
+                                                color: "#010430",
+                                                marginBottom: "5px"
+                                            }}
+                                        >
+                                            {item.sender}
+                                        </div>
+
+
+                                        {/* Message */}
+                                        <div
+                                            style={{
+                                                fontSize: "16px",
+                                                color: "#444"
+                                            }}
+                                        >
                                             {item.data}
-                                        </p>
+                                        </div>
+
                                     </div>
+
                                 ))
+
                             ) : (
+
                                 <p className={styles.noMessages}>
                                     No Messages Yet
                                 </p>
+
                             )}
 
                         </div>
+
 
                         {/* Chat Input */}
                         <div className={styles.chattingArea}>
@@ -848,57 +882,75 @@ return (
                         </div>
 
                     </div>
+
                 </div>
             )}
 
-            {/* Control Buttons */}
+
+            {/* ================= CONTROL BUTTONS ================= */}
+
             <div className={styles.buttonContainers}>
+
 
                 {/* Video */}
                 <IconButton
                     onClick={handleVideo}
                     style={{ color: "white" }}
                 >
+
                     {video ? (
                         <VideocamIcon />
                     ) : (
                         <VideocamOffIcon />
                     )}
+
                 </IconButton>
+
 
                 {/* End Call */}
                 <IconButton
                     onClick={handleEndCall}
                     style={{ color: "red" }}
                 >
+
                     <CallEndIcon />
+
                 </IconButton>
+
 
                 {/* Audio */}
                 <IconButton
                     onClick={handleAudio}
                     style={{ color: "white" }}
                 >
+
                     {audio ? (
                         <MicIcon />
                     ) : (
                         <MicOffIcon />
                     )}
+
                 </IconButton>
+
 
                 {/* Screen Share */}
                 {screenAvailable && (
+
                     <IconButton
                         onClick={handleScreen}
                         style={{ color: "white" }}
                     >
+
                         {screen ? (
                             <ScreenShareIcon />
                         ) : (
                             <StopScreenShareIcon />
                         )}
+
                     </IconButton>
+
                 )}
+
 
                 {/* Chat */}
                 <Badge
@@ -906,17 +958,23 @@ return (
                     max={999}
                     color="primary"
                 >
+
                     <IconButton
                         onClick={() => setModal(!showModal)}
                         style={{ color: "white" }}
                     >
+
                         <ChatIcon />
+
                     </IconButton>
+
                 </Badge>
 
             </div>
 
-            {/* Local Video */}
+
+            {/* ================= LOCAL VIDEO ================= */}
+
             <video
                 className={styles.meetUserVideo}
                 ref={localVideoref}
@@ -925,20 +983,26 @@ return (
                 playsInline
             />
 
-            {/* Other Participants */}
+
+            {/* ================= OTHER PARTICIPANTS ================= */}
+
             <div className={styles.conferenceView}>
 
                 {videos.map((video) => (
+
                     <div
                         key={video.socketId}
                         className={styles.videoWrapper}
                     >
+
                         <video
                             data-socket={video.socketId}
                             ref={(ref) => {
+
                                 if (ref && video.stream) {
                                     ref.srcObject = video.stream;
                                 }
+
                             }}
                             autoPlay
                             playsInline
@@ -947,7 +1011,9 @@ return (
                         <span className={styles.participantName}>
                             Participant
                         </span>
+
                     </div>
+
                 ))}
 
             </div>

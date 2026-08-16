@@ -434,3 +434,60 @@
         min-width: 65px;
     }
 }
+
+.lobbyContainer .MuiTextField-root {
+    width: 290px;
+}
+
+.lobbyContainer .MuiInputLabel-root {
+    color: white;
+}
+
+.lobbyContainer .MuiInputLabel-root.Mui-focused {
+    color: #2196f3;
+}
+
+.lobbyContainer .MuiOutlinedInput-root {
+    color: white;
+}
+
+.lobbyContainer .MuiOutlinedInput-root fieldset {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.lobbyContainer .MuiOutlinedInput-root:hover fieldset {
+    border-color: white;
+}
+
+.lobbyContainer .MuiOutlinedInput-root.Mui-focused fieldset {
+    border-color: #2196f3;
+}
+
+.lobbyContainer .MuiOutlinedInput-input {
+    color: white;
+}
+
+.lobbyContainer input {
+    color: white !important;
+}
+
+.lobbyContainer label {
+    color: #2196f3 !important;
+}
+
+.lobbyContainer .MuiOutlinedInput-notchedOutline {
+    border-color: #2196f3 !important;
+}
+
+.sender {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #000;
+}
+
+.messageText {
+    margin: 0;
+    font-size: 16px;
+    color: #444;
+}

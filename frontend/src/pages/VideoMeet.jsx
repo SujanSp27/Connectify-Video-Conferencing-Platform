@@ -34,7 +34,7 @@ const [video, setVideo] = useState(false);
 const [audio, setAudio] = useState(false);
 const [screen, setScreen] = useState(false);
 
-const [showModal, setModal] = useState(true);
+const [showModal, setModal] = useState(false);
 
 const [screenAvailable, setScreenAvailable] = useState(false);
 
@@ -519,27 +519,33 @@ let addMessage = (data, sender, socketIdSender) => {
     }
 
 };
-
 let sendMessage = () => {
 
     if (message.trim() === "") return;
 
-    socketRef.current.emit(
-        "chat-message",
-        message,
-        username
-    );
+    console.log("SEND CLICKED");
+    console.log("Message:", message);
+    console.log("Socket:", socketRef.current);
 
-    setMessages(prev => [
-        ...prev,
+    // Show the message immediately
+    setMessages(prevMessages => [
+        ...prevMessages,
         {
             sender: username,
             data: message
         }
     ]);
 
-    setMessage("");
+    // Send to other users
+    if (socketRef.current) {
+        socketRef.current.emit(
+            "chat-message",
+            message,
+            username
+        );
+    }
 
+    setMessage("");
 };
    let connectToSocketServer = () => {
         if (socketRef.current?.connected) return;

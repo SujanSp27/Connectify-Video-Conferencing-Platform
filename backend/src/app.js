@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { createServer } from "node:http";
 
@@ -19,9 +20,15 @@ app.use(express.urlencoded({ limit: "40kb", extended: true }));
 
 app.use("/api/v1/users", userRoutes);
 
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ success: false, message: "An internal error occurred" });
+});
+
 const start = async () => {
     app.set("mongo_user")
-    const connectionDb = await mongoose.connect("mongodb+srv://sujanpoojary27:codewithSP@cluster0.bunvszu.mongodb.net/?appName=Cluster0")
+    const connectionDb = await mongoose.connect(process.env.MONGODB_URI)
 
     console.log(`MONGO Connected DB HOst: ${connectionDb.connection.host}`)
     server.listen(app.get("port"), () => {

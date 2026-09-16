@@ -1,13 +1,141 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ================================================================
+   CONNECTIFY DESIGN SYSTEM
+   Brand: Deep Plum + Orchid + Coral + Warm Off-White
+   ================================================================ */
+
+:root {
+  /* ── Primary Brand — Deep Plum ── */
+  --plum:              #6D28D9;
+  --plum-hover:        #5B21B6;
+  --plum-light:        #7C3AED;
+  --plum-subtle:       #EDE9FE;
+  --plum-ghost:        rgba(109, 40, 217, 0.08);
+
+  /* ── Secondary — Orchid ── */
+  --orchid:            #A855F7;
+  --orchid-soft:       #F3E8FF;
+  --orchid-muted:      rgba(168, 85, 247, 0.15);
+
+  /* ── Accent — Coral ── */
+  --coral:             #F97360;
+  --coral-hover:       #F75D46;
+  --coral-soft:        #FFF1EE;
+
+  /* ── Backgrounds ── */
+  --bg-page:           #FAF9F7;
+  --bg-surface:        #FFFFFF;
+  --bg-soft:           #F5F3F0;
+  --bg-muted:          #EEE9E5;
+
+  /* ── Text ── */
+  --text-primary:      #211B2C;
+  --text-secondary:    #625A6B;
+  --text-muted:        #8A8292;
+  --text-on-dark:      #FAF9F7;
+
+  /* ── Borders ── */
+  --border:            #E7E2EA;
+  --border-strong:     #D1C9D9;
+
+  /* ── Semantic ── */
+  --error:             #EF4444;
+  --error-bg:          #FEF2F2;
+  --error-border:      #FECACA;
+  --success:           #22C55E;
+  --success-bg:        #F0FDF4;
+  --warning:           #F59E0B;
+
+  /* ── Meeting Dark Interface ── */
+  --meet-bg:           #17131D;
+  --meet-surface:      #211B2C;
+  --meet-surface-2:    #292331;
+  --meet-control:      #1D1824;
+  --meet-control-hover:#332A3D;
+  --meet-active:       #8B5CF6;
+  --meet-text:         #FAF9F7;
+  --meet-text-muted:   #C9C2CF;
+  --meet-muted:        #766D7D;
+  --meet-end:          #EF4444;
+
+  /* ── Spacing ── */
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 20px;  --s-6: 24px;  --s-8: 32px;  --s-10: 40px;
+  --s-12: 48px; --s-14: 56px; --s-16: 64px; --s-20: 80px;
+
+  /* ── Typography ── */
+  --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body:    'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'Roboto Mono', 'Courier New', monospace;
+
+  --text-xs:   0.75rem;    /* 12px */
+  --text-sm:   0.8125rem;  /* 13px */
+  --text-base: 0.9375rem;  /* 15px */
+  --text-md:   1rem;       /* 16px */
+  --text-lg:   1.125rem;   /* 18px */
+  --text-xl:   1.25rem;    /* 20px */
+  --text-2xl:  1.5rem;     /* 24px */
+  --text-3xl:  1.875rem;   /* 30px */
+  --text-4xl:  2.25rem;    /* 36px */
+  --text-5xl:  3rem;       /* 48px */
+  --text-6xl:  3.75rem;    /* 60px */
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semi:    600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  /* ── Radius ── */
+  --r-xs:   3px;
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-2xl:  28px;
+  --r-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(33,27,44,0.06);
+  --shadow-sm: 0 2px 6px rgba(33,27,44,0.08), 0 1px 2px rgba(33,27,44,0.04);
+  --shadow-md: 0 4px 16px rgba(33,27,44,0.1);
+  --shadow-lg: 0 8px 32px rgba(33,27,44,0.14);
+  --shadow-xl: 0 16px 56px rgba(33,27,44,0.18);
+  --shadow-plum: 0 6px 20px rgba(109,40,217,0.3);
+  --shadow-coral: 0 4px 16px rgba(249,115,96,0.3);
+
+  /* ── Transitions ── */
+  --ease-fast:  100ms ease;
+  --ease-base:  200ms ease;
+  --ease-slow:  350ms ease;
+}
+
+/* ── Global Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root {
+  width: 100%;
+  min-height: 100%;
+  font-family: var(--font-body);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  background: var(--bg-page);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 { font-family: var(--font-display); line-height: 1.2; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: var(--font-body); border: none; outline: none; }
+img { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--plum);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
 }

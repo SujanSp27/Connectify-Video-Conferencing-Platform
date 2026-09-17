@@ -1,80 +1,114 @@
 /* ================================================================
-   Connectify — Meeting Room CSS
-   Professional dark cinematic design
+   Connectify Video Conferencing — Professional Meeting Experience
+   Sleek Dark Cinematic Design with Glassmorphism & High Contrast
    ================================================================ */
 
-/* ─── Base ─────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;600&display=swap');
+
+/* ─── BASE CONTAINER & THEMES ─── */
 .meetContainer {
     min-height: 100vh;
+    height: 100vh;
     width: 100%;
-    background: #0f0d14;
-    color: #FAF9F7;
-    font-family: 'Inter', sans-serif;
+    color: #f1f5f9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background 300ms ease;
 }
 
-/* ─── LOBBY ─────────────────────────────────────────────────── */
+/* Theme: Dark Cinematic (Default) */
+.theme-cinematic {
+    background: radial-gradient(circle at 50% 15%, #171c2b 0%, #0c101a 60%, #07090f 100%);
+}
+
+/* Theme: Midnight Blue */
+.theme-navy {
+    background: radial-gradient(circle at 50% 20%, #102445 0%, #0a162b 55%, #050b17 100%);
+}
+
+/* Theme: Modern Slate */
+.theme-slate {
+    background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #020617 100%);
+}
+
+/* Theme: Studio Obsidian */
+.theme-obsidian {
+    background: #09090b;
+}
+
+/* ─── LOBBY VIEW ─── */
 .lobbyContainer {
-    min-height: 100vh;
-    width: 100%;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    background:
-        radial-gradient(ellipse 70% 55% at 50% 30%, rgba(109,40,217,0.2) 0%, transparent 68%),
-        linear-gradient(160deg, #0f0d14 0%, #1c1628 50%, #0f0d14 100%);
+    padding: 1.5rem;
+    z-index: 10;
 }
 
 .lobbyCard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    background: rgba(30,24,42,0.92);
-    border: 1px solid rgba(139,92,246,0.25);
-    border-radius: 24px;
-    padding: 2.5rem 2.25rem;
+    gap: 1.25rem;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.25rem;
     width: 100%;
     max-width: 480px;
     box-shadow:
-        0 32px 80px rgba(0,0,0,0.6),
-        0 0 0 1px rgba(139,92,246,0.1),
-        inset 0 1px 0 rgba(255,255,255,0.05);
+        0 24px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 }
 
-.lobbyMeetingCode {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: rgba(201,194,207,0.6);
-    margin: 0;
+.lobbyBrand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     text-align: center;
-    background: rgba(139,92,246,0.1);
-    border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 8px;
-    padding: 6px 14px;
-    width: 100%;
-    letter-spacing: 0.3px;
-    line-height: 1.6;
 }
 
-.lobbyMeetingCode span {
-    color: #C4B5FD;
-    font-weight: 700;
+.lobbyLogo {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.lobbyMeetingBadge {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 3px 12px;
+    border-radius: 20px;
+}
+
+.lobbyMeetingBadge strong {
+    color: #e0e7ff;
     font-family: 'Roboto Mono', monospace;
-    word-break: break-all;
+    font-weight: 600;
 }
 
 .lobbyPreviewWrap {
     width: 100%;
-    max-width: 400px;
     aspect-ratio: 16 / 9;
     border-radius: 14px;
     overflow: hidden;
-    background: #1c1628;
-    border: 1px solid rgba(139,92,246,0.18);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    background: #020617;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,41 +120,135 @@
     height: 100%;
     object-fit: cover;
     border-radius: 14px;
+    transform: scaleX(-1); /* Mirror local preview */
 }
 
 .lobbyPreviewPlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.7);
+    gap: 12px;
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.lobbyControls {
     position: absolute;
-    inset: 0;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 30px;
+    padding: 4px 10px;
+    z-index: 10;
+}
+
+.lobbyControls :global(.MuiIconButton-root) {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+    width: 38px;
+    height: 38px;
+    transition: all 150ms ease;
+}
+
+.lobbyControls :global(.MuiIconButton-root:hover) {
+    background: rgba(255, 255, 255, 0.18) !important;
+    transform: scale(1.05);
+}
+
+.lobbyForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.lobbyForm :global(.MuiTextField-root) {
+    width: 100%;
+}
+
+.lobbyForm :global(.MuiInputLabel-root) {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lobbyForm :global(.MuiInputLabel-root.Mui-focused) {
+    color: #818cf8;
+}
+
+.lobbyForm :global(.MuiOutlinedInput-root) {
+    color: #f8fafc;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.lobbyForm :global(.MuiOutlinedInput-root fieldset) {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.lobbyForm :global(.MuiOutlinedInput-root:hover fieldset) {
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.lobbyForm :global(.MuiOutlinedInput-root.Mui-focused fieldset) {
+    border-color: #6366f1;
+    border-width: 2px;
+}
+
+.lobbyForm :global(.MuiFormHelperText-root) {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.lobbyJoinBtn {
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    height: 44px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+    transition: all 180ms ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
-    color: rgba(201,194,207,0.55);
 }
 
-/* MUI TextField in lobby */
-.lobbyCard :global(.MuiTextField-root)                          { width: 100%; }
-.lobbyCard :global(.MuiInputLabel-root)                         { color: rgba(201,194,207,0.55); }
-.lobbyCard :global(.MuiInputLabel-root.Mui-focused)             { color: #A78BFA; }
-.lobbyCard :global(.MuiOutlinedInput-root)                      { color: #FAF9F7; border-radius: 10px; background: rgba(255,255,255,0.04); }
-.lobbyCard :global(.MuiOutlinedInput-root fieldset)             { border-color: rgba(139,92,246,0.22); }
-.lobbyCard :global(.MuiOutlinedInput-root:hover fieldset)       { border-color: rgba(139,92,246,0.5); }
-.lobbyCard :global(.MuiOutlinedInput-root.Mui-focused fieldset) { border-color: #8B5CF6; border-width: 2px; }
-.lobbyCard :global(.MuiFormHelperText-root)                     { color: #F87171; font-size: 0.78rem; min-height: 18px; }
-.lobbyCard :global(.MuiInputBase-input)                         { color: #FAF9F7; }
-
-/* ─── MEETING CONTAINER ──────────────────────────────────────── */
-.meetVideoContainer {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    background: linear-gradient(160deg, #0f0d14 0%, #14111c 100%);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+.lobbyJoinBtn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55);
+    transform: translateY(-1px);
 }
 
-/* ─── TOP BAR ─────────────────────────────────────────────────── */
+.lobbyJoinBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ─── TOP BAR ─── */
 .topBar {
     height: 54px;
     flex-shrink: 0;
@@ -128,109 +256,216 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    background: rgba(15,13,20,0.96);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(10, 14, 23, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     z-index: 25;
-    backdrop-filter: blur(10px);
-    gap: 12px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-.topBarBrand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topBarBrand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
 
 .topBarLogo {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    font-size: 1rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.05rem;
     font-weight: 800;
-    color: #C4B5FD;
     letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #c7d2fe 0%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.topBarSep { color: rgba(255,255,255,0.2); font-size: 0.85rem; }
+.topBarSep {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+}
 
 .topBarCode {
-    font-size: 0.75rem;
-    color: rgba(201,194,207,0.55);
     font-family: 'Roboto Mono', monospace;
-    background: rgba(139,92,246,0.08);
-    border: 1px solid rgba(139,92,246,0.18);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(224, 231, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
     border-radius: 6px;
-    padding: 2px 9px;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding: 2px 8px;
+    letter-spacing: 0.5px;
+}
+
+.topBarConnectedBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.pulseDot {
+    width: 6px;
+    height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #4ade80;
+    animation: pulseDotAnim 2s infinite ease-in-out;
+}
+
+@keyframes pulseDotAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .topBarTimer {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: rgba(201,194,207,0.75);
     font-family: 'Roboto Mono', monospace;
-    letter-spacing: 1px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.topBarRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.topBarRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
 .topBarBtn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(201,194,207,0.8);
-    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    font-size: 0.78rem;
     font-weight: 500;
+    font-family: 'Inter', sans-serif;
     padding: 4px 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
-    transition: background 150ms ease;
-    font-family: 'Inter', sans-serif;
+    gap: 6px;
+    transition: all 150ms ease;
 }
-.topBarBtn:hover { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); }
 
-.topBarPeopleCount {
-    font-size: 0.78rem;
-    color: rgba(201,194,207,0.55);
+.topBarBtn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.topBarBtnActive {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #c7d2fe;
+}
+
+/* ─── SCREEN SHARE BANNER ─── */
+.screenShareBanner {
+    height: 38px;
+    background: linear-gradient(90deg, #312e81 0%, #4338ca 100%);
+    color: #ffffff;
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0 16px;
+    z-index: 20;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ─── VIDEO GRID ──────────────────────────────────────────────── */
+.stopShareBtn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease;
+}
+
+.stopShareBtn:hover {
+    background: #dc2626;
+}
+
+/* ─── DYNAMIC VIDEO GRID ─── */
 .conferenceView {
     flex: 1;
     display: grid;
-    gap: 8px;
-    padding: 12px;
-    padding-bottom: 92px;
+    gap: 12px;
+    padding: 14px 18px 96px 18px; /* Leave space for bottom toolbar */
     box-sizing: border-box;
     overflow-y: auto;
     align-content: center;
     justify-content: center;
-    position: relative;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
-.grid1  { grid-template-columns: minmax(0, 860px); justify-content: center; }
-.grid2  { grid-template-columns: repeat(2, 1fr); }
-.grid3  { grid-template-columns: repeat(2, 1fr); }
-.grid4  { grid-template-columns: repeat(2, 1fr); }
-.grid5  { grid-template-columns: repeat(3, 1fr); }
-.grid6  { grid-template-columns: repeat(3, 1fr); }
+/* Grid: 1 participant */
+.grid1 {
+    grid-template-columns: minmax(0, 920px);
+    justify-content: center;
+}
 
-/* ─── PARTICIPANT TILE ─────────────────────────────────────────── */
+/* Grid: 2 participants */
+.grid2 {
+    grid-template-columns: repeat(2, minmax(0, 680px));
+}
+
+/* Grid: 3 to 4 participants */
+.grid4 {
+    grid-template-columns: repeat(2, minmax(0, 620px));
+}
+
+/* Grid: 5 to 6 participants */
+.grid6 {
+    grid-template-columns: repeat(3, minmax(0, 480px));
+}
+
+/* Grid: 7+ adaptive */
+.gridAdaptive {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* ─── VIDEO TILE ─── */
 .videoWrapper {
     position: relative;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
-    background: #1c1628;
-    border: 1px solid rgba(255,255,255,0.07);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    background: #090d16;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     aspect-ratio: 16 / 9;
-    min-height: 160px;
-    transition: border-color 200ms ease;
+    min-height: 180px;
+    transition: border-color 200ms ease, transform 150ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.localTile { border-color: rgba(139,92,246,0.35); }
+.videoWrapper:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Local User Tile — Subtle Indigo Edge */
+.localTile {
+    border-color: rgba(99, 102, 241, 0.28);
+}
 
 .tileVideo {
     width: 100%;
@@ -240,32 +475,65 @@
     border-radius: 14px;
 }
 
+/* Watermark when local user shares screen */
+.tileWatermark {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 5;
+}
+
+/* ─── VIDEO-OFF AVATAR ─── */
 .avatarFallback {
     position: absolute;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg, #1c1628 0%, #241d35 100%);
+    gap: 12px;
+    background: linear-gradient(145deg, #0d1322 0%, #151d33 100%);
     border-radius: 14px;
+    z-index: 2;
 }
 
-.avatarFallback > span {
-    width: 70px;
-    height: 70px;
+.avatarCircle {
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6D28D9 0%, #A855F7 100%);
+    background: linear-gradient(135deg, #3730a3 0%, #6366f1 100%);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.6rem;
+    font-size: 1.65rem;
     font-weight: 800;
-    color: #fff;
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    box-shadow: 0 4px 20px rgba(109,40,217,0.5);
-    flex-shrink: 0;
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
 }
 
+.avatarLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(241, 245, 249, 0.85);
+    background: rgba(15, 23, 42, 0.6);
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ─── TILE INFO OVERLAY ─── */
 .tileInfo {
     position: absolute;
     bottom: 0;
@@ -274,64 +542,78 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 10px;
-    background: linear-gradient(to top, rgba(15,13,20,0.9) 0%, transparent 100%);
-    gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
     pointer-events: none;
+    z-index: 4;
 }
 
 .participantName {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgba(250,249,247,0.9);
-    background: rgba(15,13,20,0.7);
-    padding: 2px 8px;
-    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 9px;
+    border-radius: 6px;
     backdrop-filter: blur(4px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 65%;
+    max-width: 68%;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .youTag {
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     font-weight: 700;
-    background: rgba(139,92,246,0.3);
-    color: #C4B5FD;
-    border-radius: 3px;
+    background: rgba(99, 102, 241, 0.35);
+    color: #c7d2fe;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 4px;
     padding: 0 4px;
-    flex-shrink: 0;
+    letter-spacing: 0.2px;
 }
 
 .tileIcons {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
 }
 
-/* Reaction overlay on tile */
+.tileMutedBadge {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 5px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ─── FLOATING REACTION ANIMATION ─── */
 .reactionOverlay {
     position: absolute;
-    bottom: 50px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2.5rem;
-    animation: reactionFloat 3s ease forwards;
+    font-size: 2.8rem;
+    animation: reactionFloat 2.8s ease-out forwards;
     pointer-events: none;
     z-index: 20;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
 @keyframes reactionFloat {
-    0%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-    80%  { opacity: 1; }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-60px) scale(1.3); }
+    0%   { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.6); }
+    20%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.15); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-90px) scale(1.3); }
 }
 
-/* ─── CONTROL BAR ─────────────────────────────────────────────── */
+/* ─── BOTTOM MEETING TOOLBAR ─── */
 .buttonContainers {
     position: absolute;
     bottom: 0;
@@ -341,84 +623,91 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     padding: 0 20px;
     z-index: 20;
-    background: linear-gradient(to top, rgba(15,13,20,0.98) 0%, rgba(15,13,20,0.88) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(7, 9, 15, 0.95) 0%, rgba(7, 9, 15, 0.75) 60%, transparent 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .buttonContainers :global(.MuiIconButton-root) {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #FAF9F7 !important;
-    transition: background 140ms ease, transform 110ms ease, border-color 140ms ease;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f1f5f9 !important;
+    transition: all 150ms ease;
     flex-shrink: 0;
 }
+
 .buttonContainers :global(.MuiIconButton-root:hover) {
-    background: rgba(139,92,246,0.24) !important;
-    border-color: rgba(139,92,246,0.5);
-    transform: scale(1.1);
-}
-.buttonContainers svg { font-size: 1.4rem; }
-
-/* End call */
-.buttonContainers :global(.MuiIconButton-root[aria-label="End call"]) {
-    background: rgba(239,68,68,0.18) !important;
-    border-color: rgba(239,68,68,0.4) !important;
-    color: #FCA5A5 !important;
-}
-.buttonContainers :global(.MuiIconButton-root[aria-label="End call"]:hover) {
-    background: rgba(239,68,68,0.55) !important;
-    border-color: #EF4444 !important;
-    color: #fff !important;
-    transform: scale(1.12);
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
 }
 
-/* Muted/off */
+.buttonContainers svg {
+    font-size: 1.35rem;
+}
+
+/* Muted or Inactive Control Button */
 .controlBtnMuted:global(.MuiIconButton-root) {
-    background: rgba(249,115,96,0.15) !important;
-    border-color: rgba(249,115,96,0.4) !important;
-    color: #F97360 !important;
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: rgba(239, 68, 68, 0.45) !important;
+    color: #fca5a5 !important;
 }
+
 .controlBtnMuted:global(.MuiIconButton-root:hover) {
-    background: rgba(249,115,96,0.3) !important;
+    background: rgba(239, 68, 68, 0.35) !important;
 }
 
-/* Active (panel open) */
+/* Active Control Button (Panel open / Active state) */
 .controlBtnActive:global(.MuiIconButton-root) {
-    background: rgba(139,92,246,0.28) !important;
-    border-color: rgba(139,92,246,0.6) !important;
-    color: #C4B5FD !important;
+    background: rgba(99, 102, 241, 0.35) !important;
+    border-color: rgba(99, 102, 241, 0.65) !important;
+    color: #c7d2fe !important;
 }
 
-/* Unread badge */
-.buttonContainers :global(.MuiBadge-badge) {
-    background: #EF4444;
-    color: #fff;
-    font-size: 0.62rem;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 8px;
+/* Leave Call Button (Red Danger) */
+.leaveMeetingBtn:global(.MuiIconButton-root) {
+    background: #ef4444 !important;
+    border-color: #f87171 !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    width: 58px !important;
 }
 
-/* ─── CHAT PANEL ──────────────────────────────────────────────── */
+.leaveMeetingBtn:global(.MuiIconButton-root:hover) {
+    background: #dc2626 !important;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45);
+    transform: translateY(-2px);
+}
+
+/* ─── CHAT PANEL (Right Slide-over) ─── */
 .chatRoom {
     position: absolute;
     top: 62px;
-    right: 12px;
+    right: 16px;
     bottom: 92px;
-    width: 310px;
-    background: #FAF9F7;
-    color: #211B2C;
-    border-radius: 16px;
+    width: 330px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
     z-index: 30;
-    box-shadow: 0 16px 56px rgba(0,0,0,0.65), 0 0 0 1px rgba(139,92,246,0.15);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    animation: slideInRight 220ms ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
 .chatHeader {
@@ -427,64 +716,94 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px 0 16px;
-    background: linear-gradient(135deg, #6D28D9, #7C3AED);
-    border-radius: 16px 16px 0 0;
+    padding: 0 12px 0 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.chatHeader h1 {
-    margin: 0;
-    font-size: 0.88rem;
+.chatHeaderTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: #fff;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #f8fafc;
 }
 
-.chatHeader :global(.MuiIconButton-root)       { color: rgba(255,255,255,0.75) !important; }
-.chatHeader :global(.MuiIconButton-root:hover)  { color: #fff !important; background: rgba(255,255,255,0.14) !important; }
+.chatHeader :global(.MuiIconButton-root) {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.chatNotice {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.02);
+    padding: 6px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
 
 .chattingDisplay {
     flex: 1;
     overflow-y: auto;
-    padding: 12px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: #F5F3F0;
+    gap: 10px;
 }
-.chattingDisplay::-webkit-scrollbar { width: 3px; }
-.chattingDisplay::-webkit-scrollbar-thumb { background: #D1C9D9; border-radius: 3px; }
+
+.chattingDisplay::-webkit-scrollbar {
+    width: 4px;
+}
+.chattingDisplay::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.noMessages {
+    margin: auto;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.82rem;
+}
+
+.noMessages p {
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
 
 .message {
-    padding: 8px 11px;
-    background: #fff;
-    border: 1px solid #E7E2EA;
-    border-radius: 2px 12px 12px 12px;
+    padding: 8px 12px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px 14px 14px 14px;
     word-wrap: break-word;
-    max-width: 84%;
+    max-width: 82%;
     align-self: flex-start;
-    box-shadow: 0 1px 3px rgba(33,27,44,0.06);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .ownMessage {
     align-self: flex-end;
-    background: #EDE9FE;
-    border-color: rgba(109,40,217,0.2);
-    border-radius: 12px 2px 12px 12px;
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+    border-color: rgba(99, 102, 241, 0.4);
+    border-radius: 14px 4px 14px 14px;
 }
 
 .sender {
     font-size: 0.68rem;
     font-weight: 700;
-    color: #6D28D9;
+    color: #a5b4fc;
     margin-bottom: 3px;
     text-transform: capitalize;
 }
 
 .messageText {
     font-size: 0.85rem;
-    color: #211B2C;
-    line-height: 1.5;
+    color: #f8fafc;
+    line-height: 1.45;
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;
@@ -492,48 +811,71 @@
 
 .messageTime {
     font-size: 0.62rem;
-    color: #8A8292;
+    color: rgba(255, 255, 255, 0.5);
     margin-top: 4px;
     text-align: right;
-}
-
-.noMessages {
-    text-align: center;
-    margin-top: 36px;
-    color: #8A8292;
-    font-size: 0.85rem;
 }
 
 .chattingArea {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    padding: 10px 10px;
-    background: #fff;
-    border-top: 1px solid #E7E2EA;
+    padding: 10px 12px;
+    background: rgba(15, 23, 42, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     flex-shrink: 0;
 }
 
-.chattingArea > div { flex: 1; }
-.chattingArea :global(.MuiOutlinedInput-root) { border-radius: 10px; font-size: 0.85rem; }
-.chattingArea :global(.MuiOutlinedInput-root fieldset) { border-color: #E7E2EA; }
-.chattingArea :global(.MuiOutlinedInput-root.Mui-focused fieldset) { border-color: #6D28D9 !important; }
+.chattingArea :global(.MuiOutlinedInput-root) {
+    color: #f8fafc;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+}
 
-/* ─── PARTICIPANTS PANEL ──────────────────────────────────────── */
+.chattingArea :global(.MuiOutlinedInput-root fieldset) {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.chattingArea :global(.MuiOutlinedInput-root.Mui-focused fieldset) {
+    border-color: #6366f1 !important;
+}
+
+.chatSendBtn:global(.MuiIconButton-root) {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    width: 36px;
+    height: 36px;
+    transition: background 150ms ease;
+}
+
+.chatSendBtn:global(.MuiIconButton-root:hover) {
+    background: #4338ca !important;
+}
+
+.chatSendBtn:global(.MuiIconButton-root.Mui-disabled) {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* ─── PARTICIPANTS PANEL ─── */
 .participantsPanel {
     position: absolute;
     top: 62px;
-    right: 12px;
+    right: 16px;
     bottom: 92px;
-    width: 270px;
-    background: #1a1425;
-    border: 1px solid rgba(139,92,246,0.2);
-    border-radius: 16px;
+    width: 290px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
     z-index: 30;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 16px 56px rgba(0,0,0,0.65);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    animation: slideInRight 220ms ease-out;
 }
 
 .panelHeader {
@@ -542,25 +884,41 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px 0 16px;
-    background: linear-gradient(135deg, #6D28D9, #7C3AED);
-    border-radius: 16px 16px 0 0;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #fff;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding: 0 12px 0 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.panelHeader :global(.MuiIconButton-root)       { color: rgba(255,255,255,0.75) !important; }
-.panelHeader :global(.MuiIconButton-root:hover)  { color: #fff !important; background: rgba(255,255,255,0.14) !important; }
+.panelHeaderTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #f8fafc;
+}
+
+.panelHeader :global(.MuiIconButton-root) {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
 
 .participantsList {
     flex: 1;
     overflow-y: auto;
-    padding: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-.participantsList::-webkit-scrollbar { width: 3px; }
-.participantsList::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+
+.participantsList::-webkit-scrollbar {
+    width: 4px;
+}
+.participantsList::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
 
 .participantRow {
     display: flex;
@@ -570,29 +928,35 @@
     border-radius: 10px;
     transition: background 140ms ease;
 }
-.participantRow:hover { background: rgba(255,255,255,0.05); }
+
+.participantRow:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
 
 .participantAvatar {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6D28D9, #A855F7);
+    background: linear-gradient(135deg, #3730a3, #6366f1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.88rem;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: #fff;
     flex-shrink: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.participantInfo { flex: 1; min-width: 0; }
+.participantInfo {
+    flex: 1;
+    min-width: 0;
+}
 
 .participantRowName {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 500;
-    color: #FAF9F7;
+    color: #f8fafc;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -604,31 +968,43 @@
 .youBadge {
     font-size: 0.62rem;
     font-weight: 700;
-    background: rgba(139,92,246,0.25);
-    color: #C4B5FD;
-    border: 1px solid rgba(139,92,246,0.3);
+    background: rgba(99, 102, 241, 0.3);
+    color: #c7d2fe;
+    border: 1px solid rgba(99, 102, 241, 0.4);
     border-radius: 3px;
     padding: 1px 5px;
     flex-shrink: 0;
 }
 
-.participantRowIcons { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.participantRowIcons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
 
-/* ─── REACTIONS POPUP ─────────────────────────────────────────── */
+/* ─── REACTIONS POPOVER ─── */
 .reactionsPopup {
     position: absolute;
     bottom: 96px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
-    background: rgba(30,24,42,0.95);
-    border: 1px solid rgba(139,92,246,0.25);
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 50px;
-    padding: 8px 16px;
+    padding: 8px 18px;
     z-index: 40;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    animation: popUp 180ms ease-out;
+}
+
+@keyframes popUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .reactionBtn {
@@ -636,26 +1012,31 @@
     border: none;
     font-size: 1.6rem;
     cursor: pointer;
-    transition: transform 150ms ease;
+    transition: transform 140ms ease;
     line-height: 1;
-    padding: 2px;
+    padding: 4px;
 }
-.reactionBtn:hover { transform: scale(1.3); }
 
-/* ─── MORE MENU ───────────────────────────────────────────────── */
+.reactionBtn:hover {
+    transform: scale(1.35);
+}
+
+/* ─── MORE MENU ─── */
 .moreMenu {
     position: absolute;
     bottom: 96px;
     left: 50%;
-    transform: translateX(-20%);
-    background: rgba(30,24,42,0.97);
-    border: 1px solid rgba(139,92,246,0.22);
-    border-radius: 12px;
+    transform: translateX(-25%);
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
     padding: 6px;
     z-index: 40;
-    min-width: 200px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.55);
-    backdrop-filter: blur(12px);
+    min-width: 220px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    animation: popUp 180ms ease-out;
 }
 
 .moreMenuItem {
@@ -665,247 +1046,384 @@
     width: 100%;
     background: none;
     border: none;
-    color: rgba(201,194,207,0.85);
-    font-size: 0.85rem;
+    color: rgba(241, 245, 249, 0.88);
+    font-size: 0.84rem;
+    font-weight: 500;
     font-family: 'Inter', sans-serif;
-    padding: 9px 14px;
+    padding: 10px 14px;
     border-radius: 8px;
     cursor: pointer;
     text-align: left;
     transition: background 130ms ease;
 }
-.moreMenuItem:hover { background: rgba(139,92,246,0.15); color: #FAF9F7; }
 
-/* ─── LEAVE DIALOG ────────────────────────────────────────────── */
+.moreMenuItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* ─── MODALS & DIALOGS ─── */
 .dialogOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.72);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 1rem;
+    animation: fadeIn 150ms ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .dialog {
-    background: #1e1a2c;
-    border: 1px solid rgba(139,92,246,0.25);
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 18px;
-    padding: 2rem;
-    min-width: 320px;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.65);
+    padding: 24px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
     text-align: center;
 }
 
 .dialogTitle {
-    font-size: 1.25rem;
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
     font-weight: 700;
-    color: #FAF9F7;
-    margin: 0 0 0.5rem;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #f8fafc;
 }
 
 .dialogText {
-    font-size: 0.9rem;
-    color: rgba(201,194,207,0.7);
-    margin: 0 0 1.75rem;
+    margin: 0 0 20px 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.5;
 }
 
 .dialogActions {
     display: flex;
-    gap: 12px;
-    justify-content: center;
+    gap: 10px;
 }
 
 .dialogCancel {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: #FAF9F7;
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 10px 28px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
     border-radius: 10px;
+    height: 40px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: background 140ms ease;
+    transition: background 130ms ease;
 }
-.dialogCancel:hover { background: rgba(255,255,255,0.14); }
+
+.dialogCancel:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
 
 .dialogLeave {
-    background: #EF4444;
+    flex: 1;
+    background: #ef4444;
     border: none;
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 10px 28px;
+    color: #ffffff;
     border-radius: 10px;
+    height: 40px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    box-shadow: 0 4px 14px rgba(239,68,68,0.4);
-    transition: background 140ms ease, transform 110ms ease;
-}
-.dialogLeave:hover { background: #DC2626; transform: scale(1.03); }
-
-/* ─── RESPONSIVE ──────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-    .grid5, .grid6 { grid-template-columns: repeat(2, 1fr); }
+    transition: background 130ms ease;
 }
 
-@media (max-width: 768px) {
-    .chatRoom, .participantsPanel {
-        top: 54px;
-        right: 0; left: 0;
-        width: 100%;
-        border-radius: 0;
-        bottom: 84px;
-    }
-    .grid2, .grid3, .grid4, .grid5, .grid6 { grid-template-columns: repeat(2, 1fr); }
-    .topBarCode { display: none; }
+.dialogLeave:hover {
+    background: #dc2626;
 }
 
-@media (max-width: 480px) {
-    .buttonContainers     { gap: 5px; height: 76px; padding: 0 12px; }
-    .buttonContainers :global(.MuiIconButton-root) { width: 44px; height: 44px; }
-    .buttonContainers svg { font-size: 1.25rem; }
-    .conferenceView       { padding-bottom: 84px; gap: 6px; }
-    .grid1, .grid2, .grid3, .grid4, .grid5, .grid6 { grid-template-columns: 1fr; }
-    .reactionsPopup       { padding: 6px 10px; gap: 6px; }
-    .reactionBtn          { font-size: 1.3rem; }
-}
-
-/* ─── SETTINGS MODAL ──────────────────────────────────────────── */
+/* ─── SETTINGS MODAL ─── */
 .settingsModal {
-    background: #1a1425;
-    border: 1px solid rgba(139,92,246,0.25);
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
-    width: 480px;
-    max-width: 96vw;
-    max-height: 85vh;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 24px 72px rgba(0,0,0,0.7);
 }
 
 .settingsHeader {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 1.5rem 0.75rem;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    flex-shrink: 0;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.settingsTitle {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #FAF9F7;
+.settingsHeaderTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settingsHeaderTitle h2 {
     margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #f8fafc;
 }
 
 .settingsTabs {
     display: flex;
+    padding: 8px 16px 0 16px;
     gap: 4px;
-    padding: 0.75rem 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.15);
 }
 
 .settingsTab {
-    background: transparent;
+    background: none;
     border: none;
-    color: rgba(201,194,207,0.6);
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 6px 16px;
-    border-radius: 8px;
+    padding: 8px 14px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: background 130ms ease, color 130ms ease;
+    border-bottom: 2px solid transparent;
+    transition: all 130ms ease;
 }
-.settingsTab:hover { background: rgba(255,255,255,0.06); color: #FAF9F7; }
+
+.settingsTab:hover {
+    color: #f8fafc;
+}
 
 .settingsTabActive {
-    background: rgba(139,92,246,0.2);
-    color: #C4B5FD;
-    font-weight: 600;
+    color: #818cf8;
+    border-bottom-color: #818cf8;
 }
 
 .settingsBody {
-    flex: 1;
+    padding: 20px;
+    max-height: 420px;
     overflow-y: auto;
-    padding: 1.25rem 1.5rem;
 }
-.settingsBody::-webkit-scrollbar { width: 4px; }
-.settingsBody::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 4px; }
 
-.settingsSection { display: flex; flex-direction: column; gap: 1.25rem; }
+.settingsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
 
-.settingsField { display: flex; flex-direction: column; gap: 6px; }
+.settingsField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
 .settingsLabel {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: rgba(201,194,207,0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-
-.settingsValue {
-    font-size: 0.9rem;
-    color: #FAF9F7;
-    margin: 0;
-    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .settingsHint {
-    font-size: 0.85rem;
-    color: rgba(201,194,207,0.5);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
     margin: 0;
-    font-style: italic;
 }
 
-.settingsStatus { display: flex; align-items: center; }
-
-.statusOn  { font-size: 0.85rem; color: #22C55E; font-weight: 500; }
-.statusOff { font-size: 0.85rem; color: #F97360; font-weight: 500; }
-
-.settingsCopyBtn {
-    background: rgba(139,92,246,0.18);
-    border: 1px solid rgba(139,92,246,0.3);
-    color: #C4B5FD;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 7px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    white-space: nowrap;
-    transition: background 130ms ease;
-    flex-shrink: 0;
+.settingsValue {
+    font-size: 0.85rem;
+    color: #f8fafc;
+    margin: 0;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.settingsCopyBtn:hover { background: rgba(139,92,246,0.32); }
 
-/* ScreenShare indicator bar */
-.screenShareBanner {
-    position: absolute;
-    top: 62px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(109,40,217,0.9);
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 5px 18px;
-    border-radius: 20px;
-    z-index: 25;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(196,181,253,0.3);
+.settingsSelect :global(.MuiOutlinedInput-root) {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+}
+
+.settingsSelect :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.meterContainer {
     display: flex;
     align-items: center;
-    gap: 6px;
-    pointer-events: none;
-    font-family: 'Inter', sans-serif;
+    gap: 10px;
+}
+
+.meterTrack {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.meterBar {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    border-radius: 4px;
+    transition: width 100ms ease;
+}
+
+.settingsPreviewWrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #020617;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settingsPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.statusOn {
+    font-size: 0.8rem;
+    color: #4ade80;
+    font-weight: 500;
+}
+
+.statusOff {
+    font-size: 0.8rem;
+    color: #f87171;
+    font-weight: 500;
+}
+
+/* Themes Grid */
+.themeGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.themeOption {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 150ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.themeOption:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.themeOptionActive {
+    border-color: #818cf8;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.themePreview {
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.themeInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.themeTitle {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.themeDesc {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.settingsLinkRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settingsLinkText {
+    flex: 1;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    word-break: break-all;
+    margin: 0;
+}
+
+.settingsCopyBtn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 130ms ease;
+    white-space: nowrap;
+}
+
+.settingsCopyBtn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+/* ─── RESPONSIVE RULES ─── */
+@media (max-width: 768px) {
+    .topBar {
+        padding: 0 12px;
+    }
+    .topBarTimer {
+        display: none;
+    }
+    .conferenceView {
+        padding: 8px 8px 86px 8px;
+        gap: 8px;
+    }
+    .grid1, .grid2, .grid4, .grid6, .gridAdaptive {
+        grid-template-columns: 1fr;
+    }
+    .buttonContainers {
+        gap: 8px;
+        padding: 0 10px;
+    }
+    .buttonContainers :global(.MuiIconButton-root) {
+        width: 42px;
+        height: 42px;
+    }
+    .chatRoom, .participantsPanel {
+        top: 54px;
+        right: 8px;
+        left: 8px;
+        bottom: 84px;
+        width: auto;
+    }
 }

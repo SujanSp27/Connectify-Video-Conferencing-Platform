@@ -5,6 +5,7 @@ let messages    = {};   // roomId -> [{id, sender, senderName, message, senderSo
 let timeOnline  = {};   // socketId -> Date
 let socketToRoom = {};  // socketId -> roomId
 let socketNames  = {};  // socketId -> displayName
+let mediaStates  = {};  // socketId -> { videoEnabled: boolean, audioEnabled: boolean }
 
 export const connectToSocket = (server) => {
 
@@ -22,24 +23,30 @@ export const connectToSocket = (server) => {
         console.log(`${socket.id} connected`);
 
         // ── JOIN ROOM ──────────────────────────────────────────────
-        // payload: { roomId, name }
+        // payload: { roomId, name, videoEnabled, audioEnabled }
         socket.on("join-call", (payload) => {
 
-            // Support both old string format and new object format
-            const roomId      = typeof payload === "string" ? payload : payload.roomId;
-            const displayName = typeof payload === "string" ? "Guest"  : (payload.name || "Guest");
+            const roomId       = typeof payload === "string" ? payload : payload.roomId;
+            const displayName  = typeof payload === "string" ? "Guest"  : (payload.name || "Guest");
+            const videoEnabled = typeof payload === "object" && payload.videoEnabled !== undefined ? payload.videoEnabled : true;
+            const audioEnabled = typeof payload === "object" && payload.audioEnabled !== undefined ? payload.audioEnabled : true;
 
             if (!connections[roomId]) connections[roomId] = [];
 
-            connections[roomId].push(socket.id);
+            if (!connections[roomId].includes(socket.id)) {
+                connections[roomId].push(socket.id);
+            }
             socketToRoom[socket.id] = roomId;
             socketNames[socket.id]  = displayName;
+            mediaStates[socket.id]  = { videoEnabled, audioEnabled };
             timeOnline[socket.id]   = new Date();
 
-            // Build participant list with names for the joining user
+            // Build participant list with names and media states
             const participantList = connections[roomId].map(sid => ({
                 socketId: sid,
-                name: socketNames[sid] || "Guest"
+                name: socketNames[sid] || "Guest",
+                videoEnabled: mediaStates[sid]?.videoEnabled !== false,
+                audioEnabled: mediaStates[sid]?.audioEnabled !== false
             }));
 
             // Notify EVERYONE in the room (including the joiner) of the new participant list
@@ -47,8 +54,8 @@ export const connectToSocket = (server) => {
                 io.to(socketId).emit(
                     "user-joined",
                     socket.id,
-                    connections[roomId],      // keep backward-compat array
-                    participantList           // new: full list with names
+                    connections[roomId],
+                    participantList
                 );
             });
 
@@ -61,7 +68,8 @@ export const connectToSocket = (server) => {
                         msg.message,
                         msg.sender,
                         msg.senderName,
-                        msg.senderSocketId
+                        msg.senderSocketId,
+                        msg.timestamp
                     );
                 });
             }
@@ -84,28 +92,36 @@ export const connectToSocket = (server) => {
             // Generate a unique message ID to prevent client-side duplication
             const msgId = `${socket.id}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
             const senderName = socketNames[socket.id] || sender || "Guest";
+            const timestamp = Date.now();
 
-            messages[roomId].push({
+            const msgObj = {
                 id:             msgId,
-                sender,
+                sender:         senderName,
                 senderName,
                 message,
                 senderSocketId: socket.id,
-                timestamp:      Date.now()
-            });
+                timestamp
+            };
 
-            console.log(`[chat] ${senderName}: ${message}`);
+            messages[roomId].push(msgObj);
+
+            // Keep message buffer limited to last 100 per room
+            if (messages[roomId].length > 100) {
+                messages[roomId].shift();
+            }
+
+            console.log(`[chat] [${roomId}] ${senderName}: ${message}`);
 
             // Broadcast to ALL participants INCLUDING the sender
-            // The client uses the msgId to deduplicate the optimistic copy
-            connections[roomId].forEach((socketId) => {
+            connections[roomId]?.forEach((socketId) => {
                 io.to(socketId).emit(
                     "chat-message",
                     msgId,
                     message,
-                    sender,
                     senderName,
-                    socket.id       // senderSocketId — so client knows if it's their own
+                    senderName,
+                    socket.id,
+                    timestamp
                 );
             });
 
@@ -115,8 +131,15 @@ export const connectToSocket = (server) => {
         socket.on("video-state", (enabled) => {
             const roomId = socketToRoom[socket.id];
             if (!roomId) return;
+
+            if (!mediaStates[socket.id]) {
+                mediaStates[socket.id] = { videoEnabled: enabled, audioEnabled: true };
+            } else {
+                mediaStates[socket.id].videoEnabled = enabled;
+            }
+
             // Broadcast to everyone else in the room
-            connections[roomId].forEach((socketId) => {
+            connections[roomId]?.forEach((socketId) => {
                 if (socketId !== socket.id) {
                     io.to(socketId).emit("video-state", socket.id, enabled);
                 }
@@ -127,7 +150,14 @@ export const connectToSocket = (server) => {
         socket.on("audio-state", (enabled) => {
             const roomId = socketToRoom[socket.id];
             if (!roomId) return;
-            connections[roomId].forEach((socketId) => {
+
+            if (!mediaStates[socket.id]) {
+                mediaStates[socket.id] = { videoEnabled: true, audioEnabled: enabled };
+            } else {
+                mediaStates[socket.id].audioEnabled = enabled;
+            }
+
+            connections[roomId]?.forEach((socketId) => {
                 if (socketId !== socket.id) {
                     io.to(socketId).emit("audio-state", socket.id, enabled);
                 }
@@ -135,11 +165,11 @@ export const connectToSocket = (server) => {
         });
 
         // ── REACTION ──────────────────────────────────────────────
-        socket.on("reaction", (emoji, senderSocketId) => {
+        socket.on("reaction", (emoji) => {
             const roomId = socketToRoom[socket.id];
             if (!roomId) return;
             // Broadcast to everyone else so they see the reaction on the sender's tile
-            connections[roomId].forEach((socketId) => {
+            connections[roomId]?.forEach((socketId) => {
                 if (socketId !== socket.id) {
                     io.to(socketId).emit("reaction", emoji, socket.id);
                 }
@@ -152,11 +182,11 @@ export const connectToSocket = (server) => {
             const roomId = socketToRoom[socket.id];
             if (!roomId) return;
 
+            connections[roomId] = (connections[roomId] || []).filter(id => id !== socket.id);
+
             connections[roomId].forEach((socketId) => {
                 io.to(socketId).emit("user-left", socket.id);
             });
-
-            connections[roomId] = connections[roomId].filter(id => id !== socket.id);
 
             if (connections[roomId].length === 0) {
                 delete connections[roomId];
@@ -165,6 +195,7 @@ export const connectToSocket = (server) => {
 
             delete socketToRoom[socket.id];
             delete socketNames[socket.id];
+            delete mediaStates[socket.id];
             delete timeOnline[socket.id];
 
             console.log(`${socket.id} disconnected`);

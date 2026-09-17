@@ -23,12 +23,21 @@ const login = async (req, res, next) => {
         }
 
         const token = jwt.sign(
-            { _id: user._id, username: user.username },
+            { _id: user._id, username: user.username, name: user.name },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
 
-        return res.status(200).json({ success: true, data: { token } });
+        return res.status(200).json({
+            success: true,
+            data: {
+                token,
+                user: {
+                    name: user.name,
+                    username: user.username
+                }
+            }
+        });
     } catch (e) {
         next(e);
     }

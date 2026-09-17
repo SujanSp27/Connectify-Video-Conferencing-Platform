@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     const [userData, setUserData] = useState({
         ...authContext,
         username: existingDecoded?.username || null,
+        name: existingDecoded?.name || null,
     });
 
     const router = useNavigate();
@@ -57,9 +58,14 @@ export const AuthProvider = ({ children }) => {
             const request = await client.post("/login", { username, password });
             if (request.status === 200) {
                 const token = request.data.data?.token;
+                const userObj = request.data.data?.user;
                 localStorage.setItem("token", token);
                 const decoded = decodeToken(token);
-                setUserData(prev => ({ ...prev, username: decoded?.username || username }));
+                setUserData(prev => ({
+                    ...prev,
+                    username: userObj?.username || decoded?.username || username,
+                    name: userObj?.name || decoded?.name || null
+                }));
                 router("/home");
             }
         } catch (err) {

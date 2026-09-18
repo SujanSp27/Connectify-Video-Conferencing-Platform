@@ -31,8 +31,17 @@ const start = async () => {
     const connectionDb = await mongoose.connect(process.env.MONGODB_URI)
 
     console.log(`MONGO Connected DB HOst: ${connectionDb.connection.host}`)
+    server.on("error", (err) => {
+        if (err.code === "EADDRINUSE") {
+            console.error(`\n❌ Port ${app.get("port")} is already in use. Please terminate any other node process or specify PORT=<number> in your .env file.\n`);
+        } else {
+            console.error("Server error:", err);
+        }
+        process.exit(1);
+    });
+
     server.listen(app.get("port"), () => {
-        console.log("LISTENING ON PORT 8000")
+        console.log(`LISTENING ON PORT ${app.get("port")}`);
     });
 
 

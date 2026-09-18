@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext({});
@@ -27,17 +27,31 @@ function decodeToken(token) {
     }
 }
 
-export const AuthProvider = ({ children }) => {
-    const authContext = useContext(AuthContext);
+function cleanName(val) {
+    if (!val || typeof val !== 'string') return null;
+    const trimmed = val.trim();
+    if (!trimmed || trimmed.toLowerCase() === 'unknown' || trimmed.toLowerCase() === 'undefined' || trimmed.toLowerCase() === 'null') {
+        return null;
+    }
+    return trimmed;
+}
 
-    // Try to restore username from existing token on mount
+export const AuthProvider = ({ children }) => {
+    // Try to restore user profile from localStorage or existing token on mount
     const existingToken = localStorage.getItem("token");
     const existingDecoded = existingToken ? decodeToken(existingToken) : null;
+    let savedUser = null;
+    try {
+        savedUser = JSON.parse(localStorage.getItem("user") || "null");
+    } catch {}
+
+    const resolvedUsername = cleanName(savedUser?.username) || cleanName(existingDecoded?.username) || null;
+    const resolvedName = cleanName(savedUser?.name) || cleanName(existingDecoded?.name) || resolvedUsername || null;
 
     const [userData, setUserData] = useState({
-        ...authContext,
-        username: existingDecoded?.username || null,
-        name: existingDecoded?.name || null,
+        username: resolvedUsername,
+        name: resolvedName,
+        _id: savedUser?._id || existingDecoded?._id || null,
     });
 
     const router = useNavigate();
@@ -61,11 +75,15 @@ export const AuthProvider = ({ children }) => {
                 const userObj = request.data.data?.user;
                 localStorage.setItem("token", token);
                 const decoded = decodeToken(token);
-                setUserData(prev => ({
-                    ...prev,
-                    username: userObj?.username || decoded?.username || username,
-                    name: userObj?.name || decoded?.name || null
-                }));
+                const uName = cleanName(userObj?.username) || cleanName(decoded?.username) || cleanName(username);
+                const fullName = cleanName(userObj?.name) || cleanName(decoded?.name) || uName;
+                const resolvedUser = {
+                    username: uName,
+                    name: fullName,
+                    _id: userObj?._id || decoded?._id || null,
+                };
+                localStorage.setItem("user", JSON.stringify(resolvedUser));
+                setUserData(resolvedUser);
                 router("/home");
             }
         } catch (err) {

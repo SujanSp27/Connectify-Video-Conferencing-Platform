@@ -1,73 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 
 /* ================================================================
-   CONNECTIFY DESIGN SYSTEM
-   Brand: Deep Plum + Orchid + Coral + Warm Off-White
+   CONNECTIFY DESIGN SYSTEM — PRODUCTION SAAS PALETTE
+   Sophisticated Modern Dark Theme: Deep Navy, Midnight Charcoal,
+   Electric Indigo Accent, Emerald, Amber, Rose
    ================================================================ */
 
 :root {
-  /* ── Primary Brand — Deep Plum ── */
-  --plum:              #6D28D9;
-  --plum-hover:        #5B21B6;
-  --plum-light:        #7C3AED;
-  --plum-subtle:       #EDE9FE;
-  --plum-ghost:        rgba(109, 40, 217, 0.08);
+  /* ── Background Hierarchy ── */
+  --bg-page:           #070a12;
+  --bg-page-deep:      #05070d;
+  --bg-surface:        #0f172a;
+  --bg-surface-hover:  #162038;
+  --bg-card:           rgba(15, 23, 42, 0.75);
+  --bg-card-elevated:  rgba(22, 32, 56, 0.85);
+  --bg-card-solid:     #131c31;
+  --bg-glass:          rgba(15, 23, 42, 0.65);
+  --bg-input:          rgba(255, 255, 255, 0.04);
+  --bg-input-focus:    rgba(255, 255, 255, 0.07);
 
-  /* ── Secondary — Orchid ── */
-  --orchid:            #A855F7;
-  --orchid-soft:       #F3E8FF;
-  --orchid-muted:      rgba(168, 85, 247, 0.15);
+  /* ── Primary Brand & Accents ── */
+  --primary:           #6366f1;
+  --primary-hover:     #4f46e5;
+  --primary-glow:      rgba(99, 102, 241, 0.35);
+  --primary-subtle:    rgba(99, 102, 241, 0.12);
+  --primary-border:    rgba(99, 102, 241, 0.3);
 
-  /* ── Accent — Coral ── */
-  --coral:             #F97360;
-  --coral-hover:       #F75D46;
-  --coral-soft:        #FFF1EE;
+  /* ── Secondary / Electric Accents ── */
+  --accent-cyan:       #38bdf8;
+  --accent-cyan-glow:  rgba(56, 189, 248, 0.25);
+  --accent-violet:     #818cf8;
+  --accent-blue:       #2563eb;
 
-  /* ── Backgrounds ── */
-  --bg-page:           #FAF9F7;
-  --bg-surface:        #FFFFFF;
-  --bg-soft:           #F5F3F0;
-  --bg-muted:          #EEE9E5;
+  /* ── Typography & Text Hierarchy ── */
+  --text-primary:      #f8fafc;
+  --text-secondary:    #94a3b8;
+  --text-muted:        #64748b;
+  --text-dim:          #475569;
+  --text-on-accent:    #ffffff;
 
-  /* ── Text ── */
-  --text-primary:      #211B2C;
-  --text-secondary:    #625A6B;
-  --text-muted:        #8A8292;
-  --text-on-dark:      #FAF9F7;
+  /* ── Borders & Outlines ── */
+  --border-subtle:     rgba(255, 255, 255, 0.07);
+  --border-default:    rgba(255, 255, 255, 0.12);
+  --border-hover:      rgba(255, 255, 255, 0.22);
+  --border-strong:     rgba(255, 255, 255, 0.32);
 
-  /* ── Borders ── */
-  --border:            #E7E2EA;
-  --border-strong:     #D1C9D9;
+  /* ── Status & Feedback ── */
+  --success:           #10b981;
+  --success-bg:        rgba(16, 185, 129, 0.12);
+  --success-border:    rgba(16, 185, 129, 0.3);
+  --warning:           #f59e0b;
+  --warning-bg:        rgba(245, 158, 11, 0.12);
+  --warning-border:    rgba(245, 158, 11, 0.3);
+  --danger:            #ef4444;
+  --danger-hover:      #dc2626;
+  --danger-bg:         rgba(239, 68, 68, 0.14);
+  --danger-border:     rgba(239, 68, 68, 0.35);
 
-  /* ── Semantic ── */
-  --error:             #EF4444;
-  --error-bg:          #FEF2F2;
-  --error-border:      #FECACA;
-  --success:           #22C55E;
-  --success-bg:        #F0FDF4;
-  --warning:           #F59E0B;
-
-  /* ── Meeting Dark Interface ── */
-  --meet-bg:           #17131D;
-  --meet-surface:      #211B2C;
-  --meet-surface-2:    #292331;
-  --meet-control:      #1D1824;
-  --meet-control-hover:#332A3D;
-  --meet-active:       #8B5CF6;
-  --meet-text:         #FAF9F7;
-  --meet-text-muted:   #C9C2CF;
-  --meet-muted:        #766D7D;
-  --meet-end:          #EF4444;
-
-  /* ── Spacing ── */
-  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
-  --s-5: 20px;  --s-6: 24px;  --s-8: 32px;  --s-10: 40px;
-  --s-12: 48px; --s-14: 56px; --s-16: 64px; --s-20: 80px;
-
-  /* ── Typography ── */
-  --font-display: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  --font-body:    'Inter', -apple-system, 'Segoe UI', sans-serif;
-  --font-mono:    'Roboto Mono', 'Courier New', monospace;
+  /* ── Typography Scales ── */
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'Roboto Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --text-xs:   0.75rem;    /* 12px */
   --text-sm:   0.8125rem;  /* 13px */
@@ -81,61 +74,134 @@
   --text-5xl:  3rem;       /* 48px */
   --text-6xl:  3.75rem;    /* 60px */
 
-  --fw-regular: 400;
-  --fw-medium:  500;
-  --fw-semi:    600;
-  --fw-bold:    700;
-  --fw-black:   800;
-
-  /* ── Radius ── */
-  --r-xs:   3px;
-  --r-sm:   6px;
-  --r-md:   10px;
-  --r-lg:   14px;
-  --r-xl:   20px;
-  --r-2xl:  28px;
+  /* ── Radii ── */
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   22px;
+  --r-2xl:  30px;
   --r-full: 9999px;
 
-  /* ── Shadows ── */
-  --shadow-xs: 0 1px 2px rgba(33,27,44,0.06);
-  --shadow-sm: 0 2px 6px rgba(33,27,44,0.08), 0 1px 2px rgba(33,27,44,0.04);
-  --shadow-md: 0 4px 16px rgba(33,27,44,0.1);
-  --shadow-lg: 0 8px 32px rgba(33,27,44,0.14);
-  --shadow-xl: 0 16px 56px rgba(33,27,44,0.18);
-  --shadow-plum: 0 6px 20px rgba(109,40,217,0.3);
-  --shadow-coral: 0 4px 16px rgba(249,115,96,0.3);
+  /* ── Shadows & Glows ── */
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md:   0 6px 20px rgba(0, 0, 0, 0.45);
+  --shadow-lg:   0 12px 36px rgba(0, 0, 0, 0.55);
+  --shadow-xl:   0 24px 60px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 32px rgba(99, 102, 241, 0.25);
+  --shadow-glow-cyan: 0 0 32px rgba(56, 189, 248, 0.2);
 
   /* ── Transitions ── */
-  --ease-fast:  100ms ease;
-  --ease-base:  200ms ease;
-  --ease-slow:  350ms ease;
+  --ease-fast:  120ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-base:  200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-slow:  350ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Global Reset ── */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── Global Reset & Base Elements ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html, body, #root {
   width: 100%;
   min-height: 100%;
   font-family: var(--font-body);
   color: var(--text-primary);
+  background-color: var(--bg-page);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--bg-page);
   overflow-x: hidden;
-  line-height: 1.6;
+  line-height: 1.55;
+  background-color: var(--bg-page);
 }
 
-h1, h2, h3, h4, h5 { font-family: var(--font-display); line-height: 1.2; }
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; font-family: var(--font-body); border: none; outline: none; }
-img { max-width: 100%; display: block; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-body);
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+  color: #f8fafc;
+  caret-color: #6366f1;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+input::selection, textarea::selection {
+  background: rgba(99, 102, 241, 0.45);
+  color: #ffffff;
+}
+
+/* Material-UI inputs dark mode text enforcement */
+.MuiInputBase-input {
+  color: #f8fafc !important;
+  caret-color: #6366f1 !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+.MuiInputBase-input::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+}
+
+.MuiOutlinedInput-input {
+  color: #f8fafc !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+img, svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Accessible Focus States ── */
 :focus-visible {
-  outline: 2px solid var(--plum);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
-  border-radius: var(--r-xs);
+  border-radius: var(--r-sm);
+}
+
+/* ── Custom Sleek Dark Scrollbars ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--r-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
 }

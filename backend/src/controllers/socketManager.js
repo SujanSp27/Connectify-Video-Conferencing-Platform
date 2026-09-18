@@ -1,11 +1,25 @@
 import { Server } from "socket.io";
 
-let connections = {};   // roomId -> [socketId, ...]
-let messages    = {};   // roomId -> [{id, sender, senderName, message, senderSocketId, timestamp}]
-let timeOnline  = {};   // socketId -> Date
-let socketToRoom = {};  // socketId -> roomId
-let socketNames  = {};  // socketId -> displayName
-let mediaStates  = {};  // socketId -> { videoEnabled: boolean, audioEnabled: boolean }
+let connections   = {};   // roomId -> [socketId, ...]
+let messages      = {};   // roomId -> [{id, sender, senderName, message, senderSocketId, timestamp}]
+let timeOnline    = {};   // socketId -> Date
+let socketToRoom  = {};   // socketId -> roomId
+let socketNames   = {};   // socketId -> displayName
+let socketUserIds = {};   // socketId -> userId
+let mediaStates   = {};   // socketId -> { videoEnabled: boolean, audioEnabled: boolean }
+
+const normalizeRoomId = (raw) => {
+    if (!raw) return "default-meeting";
+    let str = String(raw).trim();
+    try {
+        if (str.startsWith("http://") || str.startsWith("https://")) {
+            const parsed = new URL(str);
+            str = parsed.pathname;
+        }
+    } catch {}
+    str = str.replace(/^\/+|\/+$/g, "").split("/").pop() || "default-meeting";
+    return str.toLowerCase();
+};
 
 export const connectToSocket = (server) => {
 
@@ -20,30 +34,35 @@ export const connectToSocket = (server) => {
 
     io.on("connection", (socket) => {
 
-        console.log(`${socket.id} connected`);
+        console.log(`[socket] ${socket.id} connected`);
 
         // ── JOIN ROOM ──────────────────────────────────────────────
-        // payload: { roomId, name, videoEnabled, audioEnabled }
+        // payload: { roomId, name, userId, videoEnabled, audioEnabled }
         socket.on("join-call", (payload) => {
 
-            const roomId       = typeof payload === "string" ? payload : payload.roomId;
-            const displayName  = typeof payload === "string" ? "Guest"  : (payload.name || "Guest");
+            const rawRoomId    = typeof payload === "string" ? payload : payload.roomId;
+            const roomId       = normalizeRoomId(rawRoomId);
+            const displayName  = typeof payload === "string" ? "Guest" : (payload.name?.trim() || "Guest");
+            const userId       = typeof payload === "object" && payload.userId ? payload.userId : socket.id;
             const videoEnabled = typeof payload === "object" && payload.videoEnabled !== undefined ? payload.videoEnabled : true;
             const audioEnabled = typeof payload === "object" && payload.audioEnabled !== undefined ? payload.audioEnabled : true;
 
             if (!connections[roomId]) connections[roomId] = [];
 
+            // If this socket was somehow in another room or duplicate, sanitize
             if (!connections[roomId].includes(socket.id)) {
                 connections[roomId].push(socket.id);
             }
-            socketToRoom[socket.id] = roomId;
-            socketNames[socket.id]  = displayName;
-            mediaStates[socket.id]  = { videoEnabled, audioEnabled };
-            timeOnline[socket.id]   = new Date();
+            socketToRoom[socket.id]  = roomId;
+            socketNames[socket.id]   = displayName;
+            socketUserIds[socket.id] = userId;
+            mediaStates[socket.id]   = { videoEnabled, audioEnabled };
+            timeOnline[socket.id]    = new Date();
 
-            // Build participant list with names and media states
+            // Build clean participant list with names, userIds, and media states
             const participantList = connections[roomId].map(sid => ({
                 socketId: sid,
+                userId: socketUserIds[sid] || sid,
                 name: socketNames[sid] || "Guest",
                 videoEnabled: mediaStates[sid]?.videoEnabled !== false,
                 audioEnabled: mediaStates[sid]?.audioEnabled !== false
@@ -195,6 +214,7 @@ export const connectToSocket = (server) => {
 
             delete socketToRoom[socket.id];
             delete socketNames[socket.id];
+            delete socketUserIds[socket.id];
             delete mediaStates[socket.id];
             delete timeOnline[socket.id];
 

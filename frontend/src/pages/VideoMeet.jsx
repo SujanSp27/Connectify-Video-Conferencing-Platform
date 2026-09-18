@@ -43,15 +43,23 @@ const THEMES = [
     { id: 'theme-obsidian',  name: 'Studio Obsidian',desc: 'Pure dark cinematic' }
 ];
 
-function getInitials(name) {
-    if (!name || typeof name !== 'string') return 'G';
+function sanitizeName(name) {
+    if (!name || typeof name !== 'string') return '';
     const trimmed = name.trim();
-    if (!trimmed) return 'G';
-    const parts = trimmed.split(/\s+/);
+    if (!trimmed || trimmed.toLowerCase() === 'unknown' || trimmed.toLowerCase() === 'undefined' || trimmed.toLowerCase() === 'null') {
+        return '';
+    }
+    return trimmed;
+}
+
+function getInitials(name) {
+    const clean = sanitizeName(name);
+    if (!clean) return 'G';
+    const parts = clean.split(/\s+/);
     if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return trimmed.slice(0, Math.min(2, trimmed.length)).toUpperCase();
+    return clean.slice(0, Math.min(2, clean.length)).toUpperCase();
 }
 
 // ════════════════════════════════════════════════════════
@@ -81,6 +89,7 @@ const MeetingTimer = memo(function MeetingTimer() {
 // ════════════════════════════════════════════════════════
 const RemoteVideo = memo(function RemoteVideo({ participant, reactions }) {
     const videoRef = useRef(null);
+    const safeName = sanitizeName(participant?.name) || 'Guest';
 
     // Bind stream safely to video element
     useEffect(() => {
@@ -102,9 +111,9 @@ const RemoteVideo = memo(function RemoteVideo({ participant, reactions }) {
             {!isVideoOn && (
                 <div className={styles.avatarFallback}>
                     <div className={styles.avatarCircle}>
-                        <span>{getInitials(participant.name)}</span>
+                        <span>{getInitials(safeName)}</span>
                     </div>
-                    <span className={styles.avatarLabel}>{participant.name || 'Guest'}</span>
+                    <span className={styles.avatarLabel}>{safeName}</span>
                 </div>
             )}
 
@@ -131,12 +140,17 @@ const RemoteVideo = memo(function RemoteVideo({ participant, reactions }) {
             {/* Tile Info Bar */}
             <div className={styles.tileInfo}>
                 <span className={styles.participantName}>
-                    {participant.name || 'Guest'}
+                    <span className={styles.tileMiniAvatar}>{getInitials(safeName)}</span>
+                    <span>{safeName}</span>
                 </span>
                 <span className={styles.tileIcons}>
-                    {isAudioMuted && (
+                    {isAudioMuted ? (
                         <span className={styles.tileMutedBadge} title="Microphone muted">
                             <MicOffIcon sx={{ fontSize: '0.85rem', color: '#f87171' }} />
+                        </span>
+                    ) : (
+                        <span className={styles.tileActiveBadge} title="Microphone active">
+                            <MicIcon sx={{ fontSize: '0.85rem', color: '#4ade80' }} />
                         </span>
                     )}
                     {!isVideoOn && (
@@ -163,6 +177,7 @@ const LocalVideo = memo(function LocalVideo({
     screenSharing
 }) {
     const videoRef = useRef(null);
+    const cleanDisplayName = sanitizeName(displayName) || 'You';
 
     // Assign stream on mount or when stream changes
     useEffect(() => {
@@ -187,9 +202,9 @@ const LocalVideo = memo(function LocalVideo({
             {!isVideoActive && (
                 <div className={styles.avatarFallback}>
                     <div className={styles.avatarCircle}>
-                        <span>{getInitials(displayName)}</span>
+                        <span>{getInitials(cleanDisplayName)}</span>
                     </div>
-                    <span className={styles.avatarLabel}>{displayName || 'You'}</span>
+                    <span className={styles.avatarLabel}>{cleanDisplayName} (You)</span>
                 </div>
             )}
 
@@ -230,13 +245,18 @@ const LocalVideo = memo(function LocalVideo({
             {/* Tile Info Bar */}
             <div className={styles.tileInfo}>
                 <span className={styles.participantName}>
-                    {displayName || 'You'}
+                    <span className={styles.tileMiniAvatar}>{getInitials(cleanDisplayName)}</span>
+                    <span>{cleanDisplayName}</span>
                     <span className={styles.youTag}>You</span>
                 </span>
                 <span className={styles.tileIcons}>
-                    {!audioEnabled && (
+                    {!audioEnabled ? (
                         <span className={styles.tileMutedBadge} title="Microphone muted">
                             <MicOffIcon sx={{ fontSize: '0.85rem', color: '#f87171' }} />
+                        </span>
+                    ) : (
+                        <span className={styles.tileActiveBadge} title="Microphone active">
+                            <MicIcon sx={{ fontSize: '0.85rem', color: '#4ade80' }} />
                         </span>
                     )}
                     {!videoEnabled && !screenSharing && (
@@ -261,6 +281,8 @@ export default function VideoMeetComponent() {
     const socketIdRef            = useRef(null);
     const peerConnectionsRef     = useRef({}); // socketId -> RTCPeerConnection
     const iceCandidateQueuesRef  = useRef({}); // socketId -> [candidates]
+    const remoteStreamsRef       = useRef({}); // socketId -> MediaStream
+    const remoteNamesRef         = useRef({}); // socketId -> string
     const localStreamRef         = useRef(null);
     const cameraTrackRef         = useRef(null);
     const screenTrackRef         = useRef(null);
@@ -271,8 +293,14 @@ export default function VideoMeetComponent() {
     const previewVideoRef        = useRef(null);
 
     // ── State ──
+    let savedUser = null;
+    try {
+        savedUser = JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {}
+    const resolvedInitialName = sanitizeName(userData?.name) || sanitizeName(userData?.username) || sanitizeName(savedUser?.name) || sanitizeName(savedUser?.username) || '';
+
     const [inMeeting, setInMeeting]               = useState(false);
-    const [displayName, setDisplayName]           = useState(userData?.name || userData?.username || '');
+    const [displayName, setDisplayName]           = useState(resolvedInitialName);
     const [nameError, setNameError]               = useState('');
     const [mediaStatus, setMediaStatus]           = useState('loading'); // 'loading' | 'ready' | 'denied'
     const [localStream, setLocalStream]           = useState(null);
@@ -303,32 +331,49 @@ export default function VideoMeetComponent() {
     const [meetingTheme, setMeetingTheme]         = useState('theme-cinematic');
     const [micVolume, setMicVolume]               = useState(0);
 
-    const meetingCode = window.location.pathname.slice(1) || 'meeting';
+    // Canonical meeting code sanitized from path
+    const meetingCode = window.location.pathname.replace(/^\/+|\/+$/g, '').split('/')[0] || 'meeting';
+
+    // Prevent viewport page scroll during meeting
+    useEffect(() => {
+        if (inMeeting) {
+            const prevOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = prevOverflow;
+            };
+        }
+    }, [inMeeting]);
 
     // Update display name if user logs in or context initializes
     useEffect(() => {
-        if (!displayName && (userData?.name || userData?.username)) {
-            setDisplayName(userData?.name || userData?.username);
+        if (!displayName) {
+            const bestName = sanitizeName(userData?.name) || sanitizeName(userData?.username) || sanitizeName(savedUser?.name) || sanitizeName(savedUser?.username);
+            if (bestName) setDisplayName(bestName);
         }
-    }, [userData, displayName]);
+    }, [userData, displayName, savedUser?.name, savedUser?.username]);
 
     // ── Safe participant upsert: strictly avoids self or duplicates ──
     const upsertParticipant = useCallback((remoteSocketId, updates) => {
         if (!remoteSocketId || remoteSocketId === socketIdRef.current) return;
         setParticipants(prev => {
             const index = prev.findIndex(p => p.socketId === remoteSocketId);
+            const rawName = updates.name !== undefined ? updates.name : undefined;
+            const safeName = rawName !== undefined ? (sanitizeName(rawName) || 'Guest') : undefined;
+            const finalUpdates = safeName !== undefined ? { ...updates, name: safeName } : updates;
+
             if (index !== -1) {
                 const next = [...prev];
-                next[index] = { ...next[index], ...updates };
+                next[index] = { ...next[index], ...finalUpdates };
                 return next;
             }
             return [...prev, {
                 socketId: remoteSocketId,
-                name: 'Guest',
+                name: safeName || 'Guest',
                 stream: null,
                 videoEnabled: true,
                 audioEnabled: true,
-                ...updates
+                ...finalUpdates
             }];
         });
     }, []);
@@ -340,6 +385,8 @@ export default function VideoMeetComponent() {
             delete peerConnectionsRef.current[remoteSocketId];
         }
         delete iceCandidateQueuesRef.current[remoteSocketId];
+        delete remoteStreamsRef.current[remoteSocketId];
+        delete remoteNamesRef.current[remoteSocketId];
     }, []);
 
     // ── Full cleanup on leave ──
@@ -359,6 +406,8 @@ export default function VideoMeetComponent() {
         });
         peerConnectionsRef.current = {};
         iceCandidateQueuesRef.current = {};
+        remoteStreamsRef.current = {};
+        remoteNamesRef.current = {};
 
         if (socketRef.current) {
             socketRef.current.removeAllListeners();
@@ -525,10 +574,22 @@ export default function VideoMeetComponent() {
             }
         };
 
-        // Receive remote stream
+        // Receive remote stream (merge audio and video tracks into one MediaStream per remote socket)
         pc.ontrack = (event) => {
-            const stream = event.streams[0] || new MediaStream([event.track]);
-            upsertParticipant(remoteSocketId, { stream });
+            const incomingTrack = event.track;
+            let stream = remoteStreamsRef.current[remoteSocketId];
+            if (!stream) {
+                stream = event.streams && event.streams[0] ? event.streams[0] : new MediaStream();
+                remoteStreamsRef.current[remoteSocketId] = stream;
+            }
+            const exists = stream.getTracks().some(t => t.id === incomingTrack.id);
+            if (!exists) {
+                stream.addTrack(incomingTrack);
+            }
+            upsertParticipant(remoteSocketId, {
+                stream,
+                name: remoteNamesRef.current[remoteSocketId] || 'Guest'
+            });
         };
 
         // Add local tracks (camera or screen)
@@ -607,8 +668,9 @@ export default function VideoMeetComponent() {
         socket.on('connect', () => {
             socketIdRef.current = socket.id;
             socket.emit('join-call', {
-                roomId: window.location.href,
+                roomId: meetingCode,
                 name: myUserName,
+                userId: userData?._id || userData?.username || socket.id,
                 videoEnabled,
                 audioEnabled
             });
@@ -624,8 +686,12 @@ export default function VideoMeetComponent() {
             if (Array.isArray(participantList)) {
                 participantList.forEach(p => {
                     if (p.socketId === myId) return;
+                    const cleanName = sanitizeName(p.name);
+                    if (cleanName) {
+                        remoteNamesRef.current[p.socketId] = cleanName;
+                    }
                     upsertParticipant(p.socketId, {
-                        name: p.name || 'Guest',
+                        name: cleanName || remoteNamesRef.current[p.socketId] || 'Guest',
                         videoEnabled: p.videoEnabled !== false,
                         audioEnabled: p.audioEnabled !== false
                     });
@@ -665,7 +731,7 @@ export default function VideoMeetComponent() {
             seenMsgIds.current.add(msgId);
 
             const isOwn = senderSocketId === socketIdRef.current;
-            const finalSender = senderName || sender || 'Guest';
+            const finalSender = sanitizeName(senderName) || sanitizeName(sender) || 'Guest';
             const timeStr = timestamp
                 ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -698,7 +764,7 @@ export default function VideoMeetComponent() {
             removeParticipant(leftSocketId);
         });
 
-    }, [handleSignalMessage, getOrCreatePeerConnection, upsertParticipant, removeParticipant, videoEnabled, audioEnabled, showChat]);
+    }, [handleSignalMessage, getOrCreatePeerConnection, upsertParticipant, removeParticipant, videoEnabled, audioEnabled, showChat, meetingCode, userData?._id, userData?.username]);
 
     // ── 8. JOIN MEETING HANDLER ──
     const handleJoinMeeting = useCallback(() => {
@@ -811,7 +877,8 @@ export default function VideoMeetComponent() {
     const getGridClass = () => {
         if (totalCount === 1) return styles.grid1;
         if (totalCount === 2) return styles.grid2;
-        if (totalCount <= 4) return styles.grid4;
+        if (totalCount === 3) return styles.grid3;
+        if (totalCount === 4) return styles.grid4;
         if (totalCount <= 6) return styles.grid6;
         return styles.gridAdaptive;
     };
@@ -933,12 +1000,19 @@ export default function VideoMeetComponent() {
                 <div className={styles.topBarBrand}>
                     <span className={styles.topBarLogo}>Connectify</span>
                     <span className={styles.topBarSep}>/</span>
-                    <span className={styles.topBarCode} title="Meeting Code">
-                        {meetingCode}
-                    </span>
-                    <span className={styles.topBarConnectedBadge}>
+                    <Tooltip title="Click to copy invite link">
+                        <button
+                            type="button"
+                            className={styles.topBarCode}
+                            onClick={copyMeetingInvite}
+                            aria-label={`Meeting code: ${meetingCode}. Click to copy invite link`}
+                        >
+                            {copied ? 'Copied!' : meetingCode}
+                        </button>
+                    </Tooltip>
+                    <span className={styles.topBarConnectedBadge} title="Connected">
                         <span className={styles.pulseDot} />
-                        Connected
+                        <span>Connected</span>
                     </span>
                 </div>
 
@@ -953,7 +1027,7 @@ export default function VideoMeetComponent() {
                             aria-label="Copy meeting invite link"
                         >
                             {copied ? <CheckIcon sx={{ fontSize: '0.9rem', color: '#4ade80' }} /> : <ContentCopyIcon sx={{ fontSize: '0.85rem' }} />}
-                            {copied ? 'Copied Link!' : 'Invite'}
+                            <span>{copied ? 'Copied!' : 'Invite'}</span>
                         </button>
                     </Tooltip>
 
@@ -979,175 +1053,202 @@ export default function VideoMeetComponent() {
                 </div>
             )}
 
-            {/* ── VIDEO CONFERENCING GRID ── */}
-            <main className={`${styles.conferenceView} ${getGridClass()}`}>
-                {/* Local user video tile */}
-                <LocalVideo
-                    stream={localStream}
-                    videoEnabled={videoEnabled}
-                    audioEnabled={audioEnabled}
-                    displayName={displayName || 'You'}
-                    reactions={reactions}
-                    localSocketId={socketIdRef.current}
-                    screenSharing={screenSharing}
-                />
-
-                {/* Remote participants video tiles */}
-                {participants.map(p => (
-                    <RemoteVideo
-                        key={p.socketId}
-                        participant={p}
+            {/* ── STAGE CONTAINER: Houses dynamic grid and side panels without overflowing viewport ── */}
+            <div className={styles.stageContainer}>
+                {/* ── VIDEO CONFERENCING GRID ── */}
+                <main className={`${styles.conferenceView} ${getGridClass()}`}>
+                    {/* Local user video tile */}
+                    <LocalVideo
+                        stream={localStream}
+                        videoEnabled={videoEnabled}
+                        audioEnabled={audioEnabled}
+                        displayName={displayName || 'You'}
                         reactions={reactions}
+                        localSocketId={socketIdRef.current}
+                        screenSharing={screenSharing}
                     />
-                ))}
-            </main>
 
-            {/* ── CHAT PANEL (Right slide-over) ── */}
-            {showChat && (
-                <aside className={styles.chatRoom} aria-label="Meeting Chat">
-                    <div className={styles.chatHeader}>
-                        <div className={styles.chatHeaderTitle}>
-                            <ChatIcon fontSize="small" sx={{ color: '#818cf8' }} />
-                            <span>In-call Messages</span>
-                        </div>
-                        <IconButton
-                            onClick={() => setShowChat(false)}
-                            aria-label="Close chat"
-                            size="small"
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    </div>
-
-                    <div className={styles.chatNotice}>
-                        Messages can be seen only by people in the call.
-                    </div>
-
-                    <div className={styles.chattingDisplay}>
-                        {messages.length === 0 ? (
-                            <div className={styles.noMessages}>
-                                <p>No messages yet.</p>
-                                <span>Send a message to start the conversation.</span>
-                            </div>
-                        ) : (
-                            messages.map(msg => (
-                                <div
-                                    key={msg.id}
-                                    className={`${styles.message} ${msg.isOwn ? styles.ownMessage : ''}`}
-                                >
-                                    {!msg.isOwn && (
-                                        <div className={styles.sender}>{msg.sender}</div>
-                                    )}
-                                    <div className={styles.messageText}>{msg.text}</div>
-                                    <div className={styles.messageTime}>{msg.ts}</div>
-                                </div>
-                            ))
-                        )}
-                        <div ref={chatEndRef} />
-                    </div>
-
-                    <div className={styles.chattingArea}>
-                        <TextField
-                            fullWidth
-                            placeholder="Send a message to everyone…"
-                            value={msgInput}
-                            onChange={e => setMsgInput(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSendMessage();
-                                }
-                            }}
-                            variant="outlined"
-                            size="small"
-                            multiline
-                            maxRows={3}
+                    {/* Remote participants video tiles */}
+                    {participants.map(p => (
+                        <RemoteVideo
+                            key={p.socketId}
+                            participant={p}
+                            reactions={reactions}
                         />
-                        <Tooltip title="Send message (Enter)">
-                            <span>
-                                <IconButton
-                                    onClick={handleSendMessage}
-                                    disabled={!msgInput.trim()}
-                                    aria-label="Send message"
-                                    className={styles.chatSendBtn}
-                                >
-                                    <SendIcon fontSize="small" />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </div>
-                </aside>
-            )}
+                    ))}
+                </main>
 
-            {/* ── PARTICIPANTS PANEL (Right slide-over) ── */}
-            {showParticipants && (
-                <aside className={styles.participantsPanel} aria-label="Meeting Participants">
-                    <div className={styles.panelHeader}>
-                        <div className={styles.panelHeaderTitle}>
-                            <PeopleIcon fontSize="small" sx={{ color: '#818cf8' }} />
-                            <span>Participants ({totalCount})</span>
-                        </div>
-                        <IconButton
-                            onClick={() => setShowParticipants(false)}
-                            aria-label="Close participants"
-                            size="small"
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    </div>
-
-                    <div className={styles.participantsList}>
-                        {/* Local User Row */}
-                        <div className={styles.participantRow}>
-                            <div className={styles.participantAvatar}>
-                                {getInitials(displayName)}
+                {/* ── CHAT PANEL (Right slide-over) ── */}
+                {showChat && (
+                    <aside className={styles.chatRoom} aria-label="Meeting Chat">
+                        <div className={styles.chatHeader}>
+                            <div className={styles.chatHeaderTitle}>
+                                <ChatIcon fontSize="small" sx={{ color: '#818cf8' }} />
+                                <span>In-call Messages</span>
                             </div>
-                            <div className={styles.participantInfo}>
-                                <span className={styles.participantRowName}>
-                                    {displayName || 'You'}
-                                    <span className={styles.youBadge}>You</span>
+                            <IconButton
+                                onClick={() => setShowChat(false)}
+                                aria-label="Close chat"
+                                size="small"
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </div>
+
+                        <div className={styles.chatNotice}>
+                            Messages can be seen only by people in the call.
+                        </div>
+
+                        <div className={styles.chattingDisplay}>
+                            {messages.length === 0 ? (
+                                <div className={styles.noMessages}>
+                                    <p>No messages yet.</p>
+                                    <span>Send a message to start the conversation.</span>
+                                </div>
+                            ) : (
+                                messages.map(msg => (
+                                    <div
+                                        key={msg.id}
+                                        className={`${styles.message} ${msg.isOwn ? styles.ownMessage : ''}`}
+                                    >
+                                        {!msg.isOwn && (
+                                            <div className={styles.sender}>{msg.sender}</div>
+                                        )}
+                                        <div className={styles.messageText}>{msg.text}</div>
+                                        <div className={styles.messageTime}>{msg.ts}</div>
+                                    </div>
+                                ))
+                            )}
+                            <div ref={chatEndRef} />
+                        </div>
+
+                        <div className={styles.chattingArea}>
+                            <TextField
+                                fullWidth
+                                placeholder="Message..."
+                                value={msgInput}
+                                onChange={e => setMsgInput(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSendMessage();
+                                    }
+                                }}
+                                variant="outlined"
+                                size="small"
+                                autoComplete="off"
+                                inputProps={{
+                                    'aria-label': 'Chat message text',
+                                    style: { color: '#f8fafc', caretColor: '#818cf8' }
+                                }}
+                                sx={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '10px',
+                                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                        color: '#f8fafc',
+                                        '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.15)' },
+                                        '&:hover fieldset': { borderColor: '#6366f1' },
+                                        '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        color: '#f8fafc !important',
+                                        WebkitTextFillColor: '#f8fafc !important',
+                                    },
+                                    '& .MuiInputBase-input::placeholder': {
+                                        color: '#94a3b8 !important',
+                                        opacity: 1,
+                                        WebkitTextFillColor: '#94a3b8 !important',
+                                    }
+                                }}
+                            />
+                            <Tooltip title="Send message (Enter)">
+                                <span>
+                                    <IconButton
+                                        onClick={handleSendMessage}
+                                        disabled={!msgInput.trim()}
+                                        aria-label="Send message"
+                                        className={styles.chatSendBtn}
+                                    >
+                                        <SendIcon fontSize="small" />
+                                    </IconButton>
                                 </span>
+                            </Tooltip>
+                        </div>
+                    </aside>
+                )}
+
+                {/* ── PARTICIPANTS PANEL (Right slide-over) ── */}
+                {showParticipants && (
+                    <aside className={styles.participantsPanel} aria-label="Meeting Participants">
+                        <div className={styles.panelHeader}>
+                            <div className={styles.panelHeaderTitle}>
+                                <PeopleIcon fontSize="small" sx={{ color: '#818cf8' }} />
+                                <span>Participants ({totalCount})</span>
                             </div>
-                            <div className={styles.participantRowIcons}>
-                                {audioEnabled ? (
-                                    <MicIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
-                                ) : (
-                                    <MicOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
-                                )}
-                                {videoEnabled ? (
-                                    <VideocamIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
-                                ) : (
-                                    <VideocamOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
-                                )}
-                            </div>
+                            <IconButton
+                                onClick={() => setShowParticipants(false)}
+                                aria-label="Close participants"
+                                size="small"
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
                         </div>
 
-                        {/* Remote Participants Rows */}
-                        {participants.map(p => (
-                            <div key={p.socketId} className={styles.participantRow}>
+                        <div className={styles.participantsList}>
+                            {/* Local User Row */}
+                            <div className={styles.participantRow}>
                                 <div className={styles.participantAvatar}>
-                                    {getInitials(p.name)}
+                                    {getInitials(displayName)}
                                 </div>
                                 <div className={styles.participantInfo}>
-                                    <span className={styles.participantRowName}>{p.name || 'Guest'}</span>
+                                    <span className={styles.participantRowName}>
+                                        {displayName || 'You'}
+                                        <span className={styles.youBadge}>You</span>
+                                    </span>
                                 </div>
                                 <div className={styles.participantRowIcons}>
-                                    {p.audioEnabled !== false ? (
+                                    {audioEnabled ? (
                                         <MicIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
                                     ) : (
                                         <MicOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
                                     )}
-                                    {p.videoEnabled !== false ? (
+                                    {videoEnabled ? (
                                         <VideocamIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
                                     ) : (
                                         <VideocamOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
                                     )}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </aside>
-            )}
+
+                            {/* Remote Participants Rows */}
+                            {participants.map(p => (
+                                <div key={p.socketId} className={styles.participantRow}>
+                                    <div className={styles.participantAvatar}>
+                                        {getInitials(p.name)}
+                                    </div>
+                                    <div className={styles.participantInfo}>
+                                        <span className={styles.participantRowName}>{p.name || 'Guest'}</span>
+                                    </div>
+                                    <div className={styles.participantRowIcons}>
+                                        {p.audioEnabled !== false ? (
+                                            <MicIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
+                                        ) : (
+                                            <MicOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
+                                        )}
+                                        {p.videoEnabled !== false ? (
+                                            <VideocamIcon sx={{ fontSize: '1rem', color: '#22c55e' }} />
+                                        ) : (
+                                            <VideocamOffIcon sx={{ fontSize: '1rem', color: '#f87171' }} />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </aside>
+                )}
+            </div>
 
             {/* ── REACTIONS POPOVER ── */}
             {showReactions && (
@@ -1165,29 +1266,68 @@ export default function VideoMeetComponent() {
                 </div>
             )}
 
-            {/* ── MORE MENU POPOVER ── */}
+            {/* ── MORE MENU POPOVER / BOTTOM SHEET ── */}
             {showMore && (
-                <div className={styles.moreMenu}>
-                    <button
-                        className={styles.moreMenuItem}
-                        onClick={() => { copyMeetingInvite(); setShowMore(false); }}
-                    >
-                        <ContentCopyIcon sx={{ fontSize: '1rem' }} /> Copy Meeting Invite
-                    </button>
-                    <button
-                        className={styles.moreMenuItem}
-                        onClick={() => { toggleFullscreen(); setShowMore(false); }}
-                    >
-                        {isFullscreen ? <FullscreenExitIcon sx={{ fontSize: '1rem' }} /> : <FullscreenIcon sx={{ fontSize: '1rem' }} />}
-                        {isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
-                    </button>
-                    <button
-                        className={styles.moreMenuItem}
-                        onClick={() => { setShowSettings(true); loadMediaDevices(); setShowMore(false); }}
-                    >
-                        <SettingsIcon sx={{ fontSize: '1rem' }} /> Settings & Background
-                    </button>
-                </div>
+                <>
+                    <div className={styles.mobileBackdrop} onClick={() => setShowMore(false)} />
+                    <div className={styles.moreMenu}>
+                        {/* Mobile Quick Reactions Row */}
+                        <div className={styles.mobileReactionsStrip}>
+                            {REACTIONS.map(emoji => (
+                                <button
+                                    key={emoji}
+                                    className={styles.reactionBtn}
+                                    onClick={() => { handleSendReaction(emoji); setShowMore(false); }}
+                                    aria-label={`Send reaction ${emoji}`}
+                                >
+                                    {emoji}
+                                </button>
+                            ))}
+                        </div>
+
+                        {screenAvailable && (
+                            <button
+                                className={styles.moreMenuItem}
+                                onClick={() => { handleScreenShare(); setShowMore(false); }}
+                            >
+                                {screenSharing ? <StopScreenShareIcon sx={{ fontSize: '1rem', color: '#ef4444' }} /> : <ScreenShareIcon sx={{ fontSize: '1rem' }} />}
+                                <span>{screenSharing ? 'Stop Presenting Screen' : 'Share Screen'}</span>
+                            </button>
+                        )}
+
+                        <button
+                            className={styles.moreMenuItem}
+                            onClick={() => { copyMeetingInvite(); setShowMore(false); }}
+                        >
+                            {copied ? <CheckIcon sx={{ fontSize: '1rem', color: '#4ade80' }} /> : <ContentCopyIcon sx={{ fontSize: '1rem' }} />}
+                            <span>{copied ? 'Invite Link Copied!' : 'Copy Meeting Invite'}</span>
+                        </button>
+
+                        <button
+                            className={styles.moreMenuItem}
+                            onClick={() => { toggleFullscreen(); setShowMore(false); }}
+                        >
+                            {isFullscreen ? <FullscreenExitIcon sx={{ fontSize: '1rem' }} /> : <FullscreenIcon sx={{ fontSize: '1rem' }} />}
+                            <span>{isFullscreen ? 'Exit Full Screen' : 'Full Screen'}</span>
+                        </button>
+
+                        <button
+                            className={styles.moreMenuItem}
+                            onClick={() => { setShowSettings(true); loadMediaDevices(); setShowMore(false); }}
+                        >
+                            <SettingsIcon sx={{ fontSize: '1rem' }} />
+                            <span>Settings & Appearance</span>
+                        </button>
+
+                        <button
+                            className={`${styles.moreMenuItem} ${styles.moreMenuLeaveItem}`}
+                            onClick={() => { setShowLeaveConfirm(true); setShowMore(false); }}
+                        >
+                            <CallEndIcon sx={{ fontSize: '1rem', color: '#ef4444' }} />
+                            <span style={{ color: '#ef4444', fontWeight: 600 }}>Leave Meeting</span>
+                        </button>
+                    </div>
+                </>
             )}
 
             {/* ── BOTTOM MEETING TOOLBAR ── */}
@@ -1214,13 +1354,13 @@ export default function VideoMeetComponent() {
                     </IconButton>
                 </Tooltip>
 
-                {/* Screen Share */}
+                {/* Screen Share (Desktop only on toolbar, accessible via More on mobile) */}
                 {screenAvailable && (
                     <Tooltip title={screenSharing ? 'Stop Presenting' : 'Share Screen'} placement="top">
                         <IconButton
                             onClick={handleScreenShare}
                             aria-label={screenSharing ? 'Stop sharing screen' : 'Share screen'}
-                            className={screenSharing ? styles.controlBtnActive : ''}
+                            className={`${screenSharing ? styles.controlBtnActive : ''} ${styles.desktopOnlyBtn}`}
                         >
                             {screenSharing ? <StopScreenShareIcon /> : <ScreenShareIcon />}
                         </IconButton>
@@ -1261,7 +1401,7 @@ export default function VideoMeetComponent() {
                     </Badge>
                 </Tooltip>
 
-                {/* Reactions */}
+                {/* Reactions (Desktop only on toolbar, accessible via More on mobile) */}
                 <Tooltip title="Reactions" placement="top">
                     <IconButton
                         onClick={() => {
@@ -1269,13 +1409,13 @@ export default function VideoMeetComponent() {
                             setShowMore(false);
                         }}
                         aria-label="Reactions"
-                        className={showReactions ? styles.controlBtnActive : ''}
+                        className={`${showReactions ? styles.controlBtnActive : ''} ${styles.desktopOnlyBtn}`}
                     >
                         <EmojiEmotionsOutlinedIcon />
                     </IconButton>
                 </Tooltip>
 
-                {/* More Options */}
+                {/* More Options (Always visible) */}
                 <Tooltip title="More Options" placement="top">
                     <IconButton
                         onClick={() => {
@@ -1289,7 +1429,7 @@ export default function VideoMeetComponent() {
                     </IconButton>
                 </Tooltip>
 
-                {/* Settings */}
+                {/* Settings (Desktop only on toolbar, accessible via More on mobile) */}
                 <Tooltip title="Settings" placement="top">
                     <IconButton
                         onClick={() => {
@@ -1298,7 +1438,7 @@ export default function VideoMeetComponent() {
                             setShowMore(false);
                         }}
                         aria-label="Settings"
-                        className={showSettings ? styles.controlBtnActive : ''}
+                        className={`${showSettings ? styles.controlBtnActive : ''} ${styles.desktopOnlyBtn}`}
                     >
                         <SettingsIcon />
                     </IconButton>

@@ -1,11 +1,11 @@
 import axios from "axios";
 import { createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import server from "../environment";
 export const AuthContext = createContext({});
 
 const client = axios.create({
-    baseURL: (process.env.REACT_APP_API_URL || "http://localhost:8000") + "/api/v1/users"
+    baseURL: (process.env.REACT_APP_API_URL || server) + "/api/v1/users"
 });
 
 // Attach JWT Bearer token to every request automatically

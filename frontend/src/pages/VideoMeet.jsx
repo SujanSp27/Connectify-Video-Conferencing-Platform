@@ -25,8 +25,9 @@ import VolumeUpIcon        from '@mui/icons-material/VolumeUp';
 import CheckIcon           from '@mui/icons-material/Check';
 import styles from '../styles/videoComponent.module.css';
 import { AuthContext } from '../contexts/AuthContext';
+import server from '../environment';
 
-const SERVER_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const SERVER_URL = process.env.REACT_APP_API_URL || server;
 const ICE_SERVERS = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },

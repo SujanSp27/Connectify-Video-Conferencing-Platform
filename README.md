@@ -169,21 +169,4 @@ The repository includes Render static-site configuration for the frontend and a 
 
 Camera, microphone, and screen capture require a secure browser context: use HTTPS outside localhost.
 
-## Implementation Notes
 
-- The current WebRTC configuration includes STUN servers but no TURN relay. Some restrictive networks may prevent participants from establishing media connections.
-- Meeting links allow guests to enter rooms; the socket join handler does not require a JWT. Account authentication protects meeting-history API access.
-- Room state is local to one backend process and is lost when that process restarts.
-- Chat passes through the server, and the current socket handler logs message text. It is not end-to-end encrypted chat.
-
-## Troubleshooting
-
-| Issue | Check |
-| --- | --- |
-| Backend does not start | Verify `MONGODB_URI` and database connectivity. |
-| Login fails with a server error | Confirm `JWT_SECRET` is set in `backend/.env` and restart the backend. |
-| Frontend reaches the wrong backend | Set `REACT_APP_API_URL`, then restart development or rebuild for deployment. |
-| Camera or microphone unavailable | Check browser permissions, device availability, and HTTPS or localhost access. |
-| Participants appear but media does not connect | Check network restrictions; the current setup has no TURN relay. |
-| A deployed meeting URL returns 404 on refresh | Configure the static host to rewrite client routes to `index.html`. |
-| Port 8000 is already in use | Stop the conflicting process or change backend `PORT` and the frontend API URL together. |
